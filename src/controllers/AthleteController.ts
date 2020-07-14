@@ -1,16 +1,16 @@
-import BaseController from "./BaseController";
 import AthleteService from "../services/AthleteService";
 import Athlete from "../entity/Athlete";
 import express from "express";
 import IRoutableController from "../interfaces/IRoutableController";
 import { Response, Request } from "express";
 
-class AthleteController extends BaseController implements IRoutableController {
+class AthleteController implements IRoutableController {
   public path: string = "/athletes";
   public router: express.Router = express.Router();
+  public service: AthleteService;
 
   constructor(service: AthleteService) {
-    super(service);
+    this.service = service;
     this.initializeRoutes();
     this.getAthleteById = this.getAthleteById.bind(this);
   }
@@ -23,6 +23,12 @@ class AthleteController extends BaseController implements IRoutableController {
   async getAthleteById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
     const response = await this.service.getById(userid);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
+  }
+
+  async insert(req: Request, res: Response): Promise<Response<any>> {
+    const response = await this.service.insert(req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
