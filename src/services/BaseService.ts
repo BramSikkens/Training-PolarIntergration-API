@@ -1,5 +1,5 @@
 import IBaseService from "../interfaces/IBaseService";
-import { getRepository } from "typeorm";
+import { getRepository, DeleteResult } from "typeorm";
 
 export default abstract class BaseService implements IBaseService {
   model: any;
@@ -56,7 +56,23 @@ export default abstract class BaseService implements IBaseService {
   update(id: string, data: any) {
     throw new Error("Method not implemented.");
   }
-  remove(id: string) {
-    throw new Error("Method not implemented.");
+  async remove(id: string) {
+    const repository = getRepository(this.model);
+    try {
+      let deleteResult: DeleteResult = await repository.delete(id);
+      if (deleteResult) {
+        return {
+          error: false,
+          deleteResult,
+        };
+      }
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 400,
+        message: error.errmsg || "Could not delete Item",
+        errors: error.errors,
+      };
+    }
   }
 }
