@@ -3,6 +3,8 @@
 import { createConnection } from "typeorm";
 import App from "./app";
 import AthleteController from "./controllers/AthleteController";
+import UserController from "./controllers/UserController";
+import TrainerController from "./controllers/TrainerController";
 
 (async () => {
   try {
@@ -11,6 +13,9 @@ import AthleteController from "./controllers/AthleteController";
     console.log("Error while connecting to the database", error);
     return error;
   }
-  const app = new App([AthleteController], 5000);
+  const app = new App(
+    [AthleteController, UserController, TrainerController],
+    5000
+  );
   app.listen();
 })();

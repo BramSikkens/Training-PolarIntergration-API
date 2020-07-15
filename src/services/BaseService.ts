@@ -1,5 +1,12 @@
 import IBaseService from "../interfaces/IBaseService";
-import { getRepository, DeleteResult } from "typeorm";
+import {
+  getRepository,
+  DeleteResult,
+  FindOneOptions,
+  Repository,
+  Repository,
+  FindManyOptions,
+} from "typeorm";
 
 export default abstract class BaseService implements IBaseService {
   model: any;
@@ -30,14 +37,34 @@ export default abstract class BaseService implements IBaseService {
     }
   }
 
-  async getById(id: string) {
+  async getById(id: string, options?: FindOneOptions) {
     const repository = getRepository(this.model);
     try {
-      const singleItem = await repository.findOne({ id });
+      const singleItem = await repository.findOne({ id }, options);
       if (singleItem) {
         return {
           error: false,
           singleItem,
+        };
+      }
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 400,
+        message: error.errmsg || "Items Not Found",
+        errors: error.errors,
+      };
+    }
+  }
+
+  async getAll(options: FindManyOptions) {
+    const repository: Repository<any> = getRepository(this.model);
+    try {
+      let multipleItems: any[] = await repository.find(options);
+      if (multipleItems) {
+        return {
+          error: false,
+          multipleItems,
         };
       }
     } catch (error) {
@@ -49,17 +76,13 @@ export default abstract class BaseService implements IBaseService {
       };
     }
   }
-
-  getAll(query: string) {
-    throw new Error("Method not implemented.");
-  }
   update(id: string, data: any) {
     throw new Error("Method not implemented.");
   }
   async remove(id: string) {
     const repository = getRepository(this.model);
     try {
-      let deleteResult: DeleteResult = await repository.delete(id);
+      const deleteResult: DeleteResult = await repository.delete(id);
       if (deleteResult) {
         return {
           error: false,
