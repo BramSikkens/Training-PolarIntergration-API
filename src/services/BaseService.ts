@@ -4,19 +4,19 @@ import {
   DeleteResult,
   FindOneOptions,
   Repository,
-  Repository,
   FindManyOptions,
+  EntitySchema,
 } from "typeorm";
 
-export default abstract class BaseService implements IBaseService {
-  model: any;
-  constructor(model: any) {
+export default abstract class BaseService<T> implements IBaseService {
+  model: EntitySchema<T>;
+  constructor(model: EntitySchema<T>) {
     this.insert = this.insert.bind(this);
     this.model = model;
   }
 
   async insert(data: any): Promise<any> {
-    const repository = getRepository(this.model);
+    const repository: Repository<T> = getRepository(this.model);
     try {
       const item: any = repository.create(data);
       const savedItem = await repository.save(item);
@@ -38,9 +38,9 @@ export default abstract class BaseService implements IBaseService {
   }
 
   async getById(id: string, options?: FindOneOptions) {
-    const repository = getRepository(this.model);
+    const repository: Repository<T> = getRepository(this.model);
     try {
-      const singleItem = await repository.findOne({ id }, options);
+      const singleItem: T = await repository.findOne(id, options);
       if (singleItem) {
         return {
           error: false,
@@ -58,9 +58,9 @@ export default abstract class BaseService implements IBaseService {
   }
 
   async getAll(options: FindManyOptions) {
-    const repository: Repository<any> = getRepository(this.model);
+    const repository: Repository<T> = getRepository(this.model);
     try {
-      let multipleItems: any[] = await repository.find(options);
+      const multipleItems: T[] = await repository.find(options);
       if (multipleItems) {
         return {
           error: false,

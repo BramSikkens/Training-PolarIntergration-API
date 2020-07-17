@@ -2,6 +2,10 @@ import express from "express";
 import * as bodyParser from "body-parser";
 import IRoutableController from "./interfaces/IRoutableController";
 
+import Container from "./IocContainer";
+import AthleteService from "./services/AthleteService";
+import Athlete from "./entity/Athlete";
+
 class App {
   public app: express.Application;
   public port: number;
