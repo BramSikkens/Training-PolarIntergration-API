@@ -5,6 +5,7 @@ import App from "./app";
 import AthleteController from "./controllers/AthleteController";
 import UserController from "./controllers/UserController";
 import TrainerController from "./controllers/TrainerController";
+import TeamController from "./controllers/TeamController";
 
 (async () => {
   try {
@@ -14,7 +15,7 @@ import TrainerController from "./controllers/TrainerController";
     return error;
   }
   const app = new App(
-    [AthleteController, UserController, TrainerController],
+    [AthleteController, UserController, TrainerController, TeamController],
     5000
   );
   app.listen();

@@ -3,11 +3,12 @@ import Athlete from "../entity/Athlete";
 import express from "express";
 import IRoutableController from "../interfaces/IRoutableController";
 import { Response, Request } from "express";
+import BaseService from "../services/BaseService";
 
 class AthleteController implements IRoutableController {
   public path: string = "/athletes";
   public router: express.Router = express.Router();
-  public service: AthleteService;
+  public service: BaseService<Athlete>;
 
   constructor(service: AthleteService) {
     this.service = service;

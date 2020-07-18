@@ -15,11 +15,11 @@ export default abstract class BaseService<T> implements IBaseService {
     this.model = model;
   }
 
-  async insert(data: any): Promise<any> {
+  async insert(data: T): Promise<T | any> {
     const repository: Repository<T> = getRepository(this.model);
     try {
-      const item: any = repository.create(data);
-      const savedItem = await repository.save(item);
+      const item: T = repository.create(data);
+      const savedItem: T = await repository.save(item);
       if (savedItem) {
         return {
           error: false,
