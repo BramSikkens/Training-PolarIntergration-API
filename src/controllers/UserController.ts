@@ -20,6 +20,23 @@ class UserController implements IRoutableController {
     this.router.get(this.path + "/:userid", this.getUserById.bind(this));
   }
 
+  // Begin Crud
+  async createTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+  async returnTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async updateTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async deleteTeam(req: Request, res: Response) {
+    throw new Error("Method not implemented.");
+  }
+  // End CRUD
+
   async getUserById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
     const response = await this.service.getById(userid, {});

@@ -16,16 +16,29 @@ class TrainerController implements IRoutableController {
     this.service = service;
     this.initializeRoutes();
     this.getTrainerById = this.getTrainerById.bind(this);
-    this.addTeamToTrainer = this.addTeamToTrainer.bind(this);
   }
 
   public initializeRoutes(): void {
     this.router.get(this.path + "/:userid", this.getTrainerById.bind(this));
-    this.router.post(
-      this.path + "/:userid/teams/:teamid",
-      this.addTeamToTrainer.bind(this)
-    );
+    this.router.post(this.path + "/:userid/teams/:teamid");
   }
+
+  // Begin Crud
+  async createTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+  async returnTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async updateTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async deleteTeam(req: Request, res: Response) {
+    throw new Error("Method not implemented.");
+  }
+  // End CRUD
 
   async getTrainerById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
@@ -34,13 +47,6 @@ class TrainerController implements IRoutableController {
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
-  }
-
-  async addTeamToTrainer(req: Request, res: Response): Promise<any> {
-    const teamservice: TeamService = new TeamService(Team);
-    // get TeamId
-    const team = await (await teamservice.getById("2")).singleItem;
-    this.service.addTeamToTrainer(team as Team, "7");
   }
 }
 

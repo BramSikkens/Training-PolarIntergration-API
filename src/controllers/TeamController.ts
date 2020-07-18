@@ -5,6 +5,8 @@ import TeamService from "../services/TeamService";
 import { Response, Request } from "express";
 import UserService from "../services/UserService";
 import User from "../entity/User";
+import TrainerService from "../services/TrainerService";
+import Trainer from "../entity/Trainer";
 
 class TeamController implements IRoutableController {
   public path: string = "/teams";
@@ -16,6 +18,7 @@ class TeamController implements IRoutableController {
     this.initializeRoutes();
     this.addUserToTeam = this.addUserToTeam.bind(this);
     this.removeUserFromTeam = this.removeUserFromTeam.bind(this);
+    this.createTeam = this.createTeam.bind(this);
   }
 
   public initializeRoutes(): void {
@@ -27,7 +30,25 @@ class TeamController implements IRoutableController {
       this.path + "/:teamId/users/:userId",
       this.removeUserFromTeam.bind(this)
     );
+    this.router.post(this.path, this.createTeam.bind(this));
   }
+
+  // Begin Crud
+  async createTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+  async returnTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async updateTeam(req: Request, res: Response): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async deleteTeam(req: Request, res: Response) {
+    throw new Error("Method not implemented.");
+  }
+  // End CRUD
 
   async addUserToTeam(req: Request, res: Response): Promise<any> {
     const { teamId, userId } = req.params;

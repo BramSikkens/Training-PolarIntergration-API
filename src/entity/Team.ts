@@ -22,6 +22,6 @@ export default class Team {
   trainer: Trainer;
 
   @ManyToMany((type) => User)
-  @JoinTable({ name: "Teams_Users" })
+  @JoinTable({ name: "teams_users" })
   users: User[];
 }
