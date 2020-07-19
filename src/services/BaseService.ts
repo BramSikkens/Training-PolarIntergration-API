@@ -7,6 +7,7 @@ import {
   Repository,
   FindManyOptions,
   EntitySchema,
+  UpdateResult,
 } from "typeorm";
 
 export default abstract class BaseService<T> implements IBaseService {
@@ -28,7 +29,7 @@ export default abstract class BaseService<T> implements IBaseService {
       const errormsg: ErrorDTO = {
         statusCode: 500,
         message: error.errmsg || "Not able to create item",
-        errors: error.errors,
+        errors: error,
       };
       return errormsg;
     }
@@ -70,8 +71,21 @@ export default abstract class BaseService<T> implements IBaseService {
       };
     }
   }
-  update(id: string, data: any) {
-    throw new Error("Method not implemented.");
+  async update(id: string, data: any): Promise<any> {
+    const repository = getRepository(this.model);
+    try {
+      const updatedResult: UpdateResult = await repository.update(id, data);
+      if (updatedResult) {
+        return updatedResult;
+      }
+    } catch (error) {
+      return {
+        error: true,
+        statusCode: 400,
+        message: error.errmsg || "Could not update Item",
+        errors: error.errors,
+      };
+    }
   }
   async remove(id: string) {
     const repository = getRepository(this.model);
@@ -79,7 +93,6 @@ export default abstract class BaseService<T> implements IBaseService {
       const deleteResult: DeleteResult = await repository.delete(id);
       if (deleteResult) {
         return {
-          error: false,
           deleteResult,
         };
       }

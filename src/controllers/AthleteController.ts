@@ -12,11 +12,16 @@ class AthleteController implements IRoutableController {
     this.athleteService = athleteService;
     this.initializeRoutes();
     this.getAthleteById = this.getAthleteById.bind(this);
+    this.delete = this.delete.bind(this);
+    this.insert = this.insert.bind(this);
+    this.updateAthlete = this.updateAthlete.bind(this);
   }
 
   public initializeRoutes(): void {
-    this.router.post(this.path, this.insert);
+    this.router.post(this.path, this.insert.bind(this));
     this.router.get(this.path + "/:userid", this.getAthleteById.bind(this));
+    this.router.delete(this.path + "/:userId", this.delete.bind(this));
+    this.router.put(this.path + "/:userId", this.updateAthlete.bind(this));
   }
 
   async getAthleteById(req: Request, res: Response): Promise<any> {
@@ -28,6 +33,20 @@ class AthleteController implements IRoutableController {
 
   async insert(req: Request, res: Response): Promise<Response<any>> {
     const response = await this.athleteService.insert(req.body);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response);
+  }
+
+  async delete(req: Request, res: Response): Promise<Response<any>> {
+    const { userId } = req.params;
+    const response = await this.athleteService.remove(userId);
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(200).send(response);
+  }
+
+  async updateAthlete(req: Request, res: Response): Promise<Response<any>> {
+    const { userId } = req.params;
+    const response = await this.athleteService.update(userId, req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }

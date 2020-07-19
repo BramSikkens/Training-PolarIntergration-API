@@ -6,11 +6,9 @@ import {
   ManyToMany,
   JoinTable,
 } from "typeorm";
-import { injectable, inject } from "inversify";
 import Trainer from "./Trainer";
 import User from "./User";
 
-@injectable()
 @Entity()
 export default class Team {
   @PrimaryGeneratedColumn()
