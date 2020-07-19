@@ -6,10 +6,11 @@ import {
   ManyToMany,
   JoinTable,
 } from "typeorm";
-
+import { injectable, inject } from "inversify";
 import Trainer from "./Trainer";
 import User from "./User";
 
+@injectable()
 @Entity()
 export default class Team {
   @PrimaryGeneratedColumn()
@@ -22,6 +23,6 @@ export default class Team {
   trainer: Trainer;
 
   @ManyToMany((type) => User)
-  @JoinTable({ name: "teams_users" })
+  @JoinTable()
   users: User[];
 }

@@ -1,4 +1,5 @@
 import IBaseService from "../interfaces/IBaseService";
+import ErrorDTO from "../DTO/ErrorDTO";
 import {
   getRepository,
   DeleteResult,
@@ -15,45 +16,38 @@ export default abstract class BaseService<T> implements IBaseService {
     this.model = model;
   }
 
-  async insert(data: T): Promise<T | any> {
+  async insert(data: T): Promise<any> {
     const repository: Repository<T> = getRepository(this.model);
     try {
       const item: T = repository.create(data);
       const savedItem: T = await repository.save(item);
       if (savedItem) {
-        return {
-          error: false,
-          savedItem,
-        };
+        return savedItem;
       }
     } catch (error) {
-      console.log("error", error);
-      return {
-        error: true,
+      const errormsg: ErrorDTO = {
         statusCode: 500,
         message: error.errmsg || "Not able to create item",
         errors: error.errors,
       };
+      return errormsg;
     }
   }
 
-  async getById(id: string, options?: FindOneOptions) {
+  async getById(id: string, options?: FindOneOptions): Promise<any> {
     const repository: Repository<T> = getRepository(this.model);
     try {
       const singleItem: T = await repository.findOne(id, options);
       if (singleItem) {
-        return {
-          error: false,
-          singleItem,
-        };
+        return singleItem;
       }
     } catch (error) {
-      return {
-        error: true,
-        statusCode: 400,
-        message: error.errmsg || "Items Not Found",
+      const errmsg: ErrorDTO = {
+        statusCode: 500,
+        message: error.errmsg || "Not able to create item",
         errors: error.errors,
       };
+      return errmsg;
     }
   }
 
