@@ -41,11 +41,13 @@ export default abstract class BaseService<T> implements IBaseService {
       const singleItem: T = await repository.findOne(id, options);
       if (singleItem) {
         return singleItem;
+      } else {
+        throw new Error("Item not found");
       }
     } catch (error) {
       const errmsg: ErrorDTO = {
         statusCode: 500,
-        message: error.errmsg || "Not able to create item",
+        message: error.errmsg || "Not able to get item",
         errors: error.errors,
       };
       return errmsg;

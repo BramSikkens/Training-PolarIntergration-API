@@ -13,52 +13,56 @@ class UserController implements IRoutableController {
   constructor(service: UserService) {
     this.userService = service;
     this.initializeRoutes();
-    this.getUserById = this.getUserById.bind(this);
-    this.createUser = this.createUser.bind(this);
-    this.deleteUser = this.deleteUser.bind(this);
-    this.updateUser = this.updateUser.bind(this);
+    this.getById = this.getById.bind(this);
+    this.create = this.create.bind(this);
+    this.delete = this.delete.bind(this);
+    this.update = this.update.bind(this);
   }
 
   public initializeRoutes(): void {
-    this.router.get(this.path + "/:userid", this.getUserById.bind(this));
-    this.router.post(this.path, this.createUser.bind(this));
-    this.router.delete(this.path + "/:userId", this.deleteUser.bind(this));
-    this.router.put(this.path + "/:userId", this.updateUser.bind(this));
+    this.router.post(this.path, this.create.bind(this));
+    this.router.get(this.path + "/:userid", this.getById.bind(this));
+    this.router.delete(this.path + "/:userId", this.delete.bind(this));
+    this.router.put(this.path + "/:userId", this.update.bind(this));
   }
 
-  async createUser(req: Request, res: Response): Promise<any> {
+  async create(req: Request, res: Response): Promise<Response<any>> {
     const response = await this.userService.insert(req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
 
-  async updateUser(req: Request, res: Response): Promise<any> {
+  async update(req: Request, res: Response): Promise<Response<any>> {
     const { userId } = req.params;
     const response = await this.userService.update(userId, req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
 
-  async deleteUser(req: Request, res: Response) {
+  async delete(req: Request, res: Response): Promise<Response<any>> {
     const { userId } = req.params;
     const response = await this.userService.remove(userId);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(200).send(response);
   }
 
-  async getUserById(req: Request, res: Response): Promise<any> {
+  async getById(req: Request, res: Response): Promise<Response<any>> {
     const { userid } = req.params;
-    const response = await this.userService.getById(userid, {});
-    const user: ReturnUserDto = {
-      id: "string",
-      username: "string",
-      email: "string",
-      dateOfBirth: "string",
-      club: "string",
-      type: "string",
-    };
-    if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(201).send(user);
+    try {
+      const response = await this.userService.getById(userid, {});
+      if (response.error) return res.status(response.statusCode).send(response);
+      const user: ReturnUserDto = {
+        id: response.id,
+        username: response.username,
+        email: response.email,
+        dateOfBirth: response.dateOfBirth.toString(),
+        club: response.club,
+        type: response.type,
+      };
+      return res.status(201).send(user);
+    } catch (error) {
+      return res.status(500).send(error);
+    }
   }
 }
 

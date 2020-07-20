@@ -14,13 +14,14 @@ class TrainerController implements IRoutableController {
     this.getTrainerById = this.getTrainerById.bind(this);
     this.createTrainer = this.createTrainer.bind(this);
     this.updateTrainer = this.updateTrainer.bind(this);
+    this.deleteTrainer = this.deleteTrainer.bind(this);
   }
 
   public initializeRoutes(): void {
-    this.router.get(this.path + "/:userid", this.getTrainerById.bind(this));
-    this.router.post(this.path + "/:userid/teams/:teamid");
     this.router.post(this.path, this.createTrainer.bind(this));
+    this.router.get(this.path + "/:userid", this.getTrainerById.bind(this));
     this.router.put(this.path + "/:userId", this.createTrainer.bind(this));
+    this.router.delete(this.path + "/:userId", this.deleteTrainer.bind(this));
   }
 
   async createTrainer(req: Request, res: Response): Promise<any> {
