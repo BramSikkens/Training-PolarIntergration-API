@@ -7,7 +7,7 @@ export interface ReturnTeamDto {
   id: string;
   groupName: string;
   trainer: string;
-  users: ReturnUserDto[];
+  users: string[];
 }
 
 export interface CreateUserDTO {
@@ -23,7 +23,8 @@ export interface ReturnUserDto {
   email: string;
   dateOfBirth: string;
   club: string;
-  type: string;
+  type?: string;
+
 }
 
 export interface ReturnTrainerDto extends ReturnUserDto {

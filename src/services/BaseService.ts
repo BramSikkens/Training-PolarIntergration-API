@@ -45,12 +45,12 @@ export default abstract class BaseService<T> implements IBaseService {
         throw new Error("Item not found");
       }
     } catch (error) {
-      const errmsg: ErrorDTO = {
+      const errorMessage: ErrorDTO = {
         statusCode: 500,
-        message: error.errmsg || "Not able to get item",
+        message: error.message || "Not able to get item",
         errors: error.errors,
       };
-      return errmsg;
+      return errorMessage;
     }
   }
 

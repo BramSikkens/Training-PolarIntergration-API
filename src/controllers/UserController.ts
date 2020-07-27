@@ -4,6 +4,9 @@ import express from "express";
 import { Response, Request } from "express";
 import User from "../entity/User";
 import { ReturnUserDto } from "../DTO/RequestDTOs";
+import ErrorDTO from "../DTO/ErrorDTO";
+import { mapToUserDTO } from "../helpers/Mappers";
+
 
 class UserController implements IRoutableController {
   public path: string = "/users";
@@ -49,19 +52,17 @@ class UserController implements IRoutableController {
   async getById(req: Request, res: Response): Promise<Response<any>> {
     const { userid } = req.params;
     try {
-      const response = await this.userService.getById(userid, {});
-      if (response.error) return res.status(response.statusCode).send(response);
-      const user: ReturnUserDto = {
-        id: response.id,
-        username: response.username,
-        email: response.email,
-        dateOfBirth: response.dateOfBirth.toString(),
-        club: response.club,
-        type: response.type,
-      };
-      return res.status(201).send(user);
-    } catch (error) {
-      return res.status(500).send(error);
+      const serviceResponse = await this.userService.getById(userid);
+      if ((serviceResponse as User).username) {
+        const returnObject: ReturnUserDto = mapToUserDTO(serviceResponse);
+        return res.status(200).send(returnObject);
+      } else if ((serviceResponse as ErrorDTO).message) {
+        return res
+          .status((serviceResponse as ErrorDTO).statusCode)
+          .send(serviceResponse);
+      }
+    } catch (err) {
+      return res.status(500).send(err);
     }
   }
 }

@@ -1,7 +1,9 @@
 import express, { Request, Response } from "express";
+import ErrorDTO from "../DTO/ErrorDTO";
 import Trainer from "../entity/Trainer";
 import IRoutableController from "../interfaces/IRoutableController";
 import TrainerService from "../services/TrainerService";
+import { mapToTrainerDTO } from "../helpers/Mappers";
 
 class TrainerController implements IRoutableController {
   public path: string = "/trainers";
@@ -46,11 +48,21 @@ class TrainerController implements IRoutableController {
 
   async getTrainerById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
-    const response = await this.trainerService.getById(userid, {
-      relations: ["teams"],
-    });
-    if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(201).send(response);
+    try {
+      const serviceResponse = await this.trainerService.getById(userid, {
+        relations: ["teams"],
+      });
+      if ((serviceResponse as Trainer).teams) {
+        const returnObject = mapToTrainerDTO(serviceResponse);
+        return res.status(200).send(returnObject);
+      } else if ((serviceResponse as ErrorDTO).message) {
+        return res
+          .status((serviceResponse as ErrorDTO).statusCode)
+          .send(serviceResponse);
+      }
+    } catch (err) {
+      return res.status(500).send(err);
+    }
   }
 }
 

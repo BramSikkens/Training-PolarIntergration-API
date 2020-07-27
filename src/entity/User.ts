@@ -3,7 +3,10 @@ import {
   Column,
   PrimaryGeneratedColumn,
   TableInheritance,
+  OneToMany,
 } from "typeorm";
+
+import Event from "./Event";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -22,4 +25,7 @@ export default class User {
 
   @Column()
   club: string;
+
+  @OneToMany((type) => Event, (event) => event.users)
+  events: Event[];
 }
