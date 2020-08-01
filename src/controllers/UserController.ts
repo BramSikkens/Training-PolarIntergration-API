@@ -6,26 +6,38 @@ import User from "../entity/User";
 import { ReturnUserDto } from "../DTO/RequestDTOs";
 import ErrorDTO from "../DTO/ErrorDTO";
 import { mapToUserDTO } from "../helpers/Mappers";
-
-
+import EventService from "../services/EventService";
+import Event from "../entity/Event";
 class UserController implements IRoutableController {
   public path: string = "/users";
   public router: express.Router = express.Router();
-  public userService: UserService;
+  private userService: UserService;
+  private eventService: EventService;
 
-  constructor(service: UserService) {
+  constructor(service: UserService, eventService: EventService) {
     this.userService = service;
+    this.eventService = eventService;
     this.initializeRoutes();
     this.getById = this.getById.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.addEventToUser = this.addEventToUser.bind(this);
+    this.removeEventFromUser = this.removeEventFromUser.bind(this);
   }
 
   public initializeRoutes(): void {
     this.router.post(this.path, this.create.bind(this));
+    this.router.post(
+      this.path + "/:userId/events/:eventId",
+      this.addEventToUser.bind(this)
+    );
     this.router.get(this.path + "/:userid", this.getById.bind(this));
     this.router.delete(this.path + "/:userId", this.delete.bind(this));
+    this.router.delete(
+      this.path + "/:userId/events/:eventId",
+      this.removeEventFromUser.bind(this)
+    );
     this.router.put(this.path + "/:userId", this.update.bind(this));
   }
 
@@ -65,6 +77,39 @@ class UserController implements IRoutableController {
       return res.status(500).send(err);
     }
   }
+
+  async addEventToUser(req: Request, res: Response) {
+    const { eventId, userId } = req.params;
+    const event: Event = await this.eventService.getById(eventId);
+
+    const user: User = await this.userService.getById(userId, {
+      relations: ["events"],
+    });
+    if (!user.events) {
+      user.events = [];
+    }
+
+    user.events.push(event);
+    await this.userService.insert(user);
+  }
+
+  async removeEventFromUser(req: Request, res: Response) {
+    const { eventId, userId } = req.params;
+    const event: Event = await this.eventService.getById(eventId);
+
+    const user: User = await this.userService.getById(userId, {
+      relations: ["events"],
+    });
+
+    user.events = user.events.filter((item) => item.id.toString() !== eventId);
+    console.log(user);
+    await this.userService.insert(user);
+  }
+
+
 }
 
-export default new UserController(new UserService(User));
+export default new UserController(
+  new UserService(User),
+  new EventService(Event)
+);

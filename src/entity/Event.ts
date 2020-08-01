@@ -17,7 +17,4 @@ export default class Event {
 
   @Column()
   type: string;
-
-  @ManyToOne((type) => User, (user) => user.events)
-  users: User;
 }

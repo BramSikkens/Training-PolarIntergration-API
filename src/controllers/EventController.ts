@@ -1,7 +1,7 @@
-import IRoutableController from "../interfaces/IRoutableController";
 import express, { Request, Response } from "express";
-import EventService from "../services/EventService";
 import Event from "../entity/Event";
+import IRoutableController from "../interfaces/IRoutableController";
+import EventService from "../services/EventService";
 
 class EventController implements IRoutableController {
   public path: string = "/events";
@@ -46,7 +46,9 @@ class EventController implements IRoutableController {
 
   async getEventById(req: Request, res: Response) {
     const { eventId } = req.params;
-    const response = await this.eventService.getById(eventId);
+    const response = await this.eventService.getById(eventId, {
+      relations: ["users"],
+    });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }

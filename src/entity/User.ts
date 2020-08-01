@@ -1,12 +1,15 @@
 import {
-  Entity,
   Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   TableInheritance,
-  OneToMany,
 } from "typeorm";
-
 import Event from "./Event";
+import PlannedTraining from "./PlannedTraining";
+import Training from "./Training";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -26,6 +29,10 @@ export default class User {
   @Column()
   club: string;
 
-  @OneToMany((type) => Event, (event) => event.users)
+  @ManyToMany((type) => Event)
+  @JoinTable()
   events: Event[];
+
+  @OneToMany((type) => Training, (training) => training.owner)
+  trainings: Training[];
 }
