@@ -6,6 +6,8 @@ import TrainingZone from "../entity/TrainingZone";
 import Athlete from "../entity/Athlete";
 import DailyMetric from "../entity/DailyMetric";
 import DailyMetricService from "../services/DailyMetricService";
+import PlannedTrainingService from "../services/PlannedTrainingService";
+import PlannedTraining from "../entity/PlannedTraining";
 
 class AthleteController implements IRoutableController {
   public path: string = "/athletes";
@@ -13,15 +15,19 @@ class AthleteController implements IRoutableController {
   private athleteService: AthleteService;
   private trainingZoneService: TrainingZoneService;
   private DailyMetricService: DailyMetricService;
+  private PlannedTrainingService: PlannedTrainingService;
 
   constructor(
     athleteService: AthleteService,
     trainingZoneService: TrainingZoneService,
-    dailymetricService: DailyMetricService
+    dailymetricService: DailyMetricService,
+    plannedTrainingService: PlannedTrainingService
   ) {
     this.trainingZoneService = trainingZoneService;
     this.athleteService = athleteService;
     this.DailyMetricService = dailymetricService;
+    this.PlannedTrainingService = plannedTrainingService;
+
     this.initializeRoutes();
     this.getAthleteById = this.getAthleteById.bind(this);
     this.delete = this.delete.bind(this);
@@ -157,5 +163,6 @@ class AthleteController implements IRoutableController {
 export default new AthleteController(
   new AthleteService(Athlete),
   new TrainingZoneService(TrainingZone),
-  new DailyMetricService(DailyMetric)
+  new DailyMetricService(DailyMetric),
+  new PlannedTrainingService(PlannedTraining)
 );
