@@ -10,6 +10,7 @@ import EventController from "./controllers/EventController";
 import DailyMetricController from "./controllers/DailyMetricController";
 import TrainingZoneController from "./controllers/TrainingZoneController";
 import PlannedTrainingController from "./controllers/PlannedTrainingController";
+import CompletedTrainingController from "./controllers/CompletedTrainingController";
 
 (async () => {
   const env = dotenv.config();
@@ -29,6 +30,7 @@ import PlannedTrainingController from "./controllers/PlannedTrainingController";
       DailyMetricController,
       TrainingZoneController,
       PlannedTrainingController,
+      CompletedTrainingController,
     ],
     // tslint:disable-next-line: radix
     parseInt(process.env.PORT)

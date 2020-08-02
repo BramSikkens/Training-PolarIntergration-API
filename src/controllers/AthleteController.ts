@@ -69,7 +69,9 @@ class AthleteController implements IRoutableController {
 
   async getAthleteById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
-    const response = await this.athleteService.getById(userid);
+    const response = await this.athleteService.getById(userid, {
+      relations: ["completedTrainings", "plannedTrainings"],
+    });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }

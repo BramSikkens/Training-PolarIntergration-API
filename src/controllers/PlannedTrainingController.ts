@@ -35,7 +35,7 @@ class PlannedTrainingController implements IRoutableController {
     );
   }
 
-  //NAKIJKEN!
+  // NAKIJKEN!
   async createPlannedTraining(req: Request, res: Response) {
     const plannedTraining = req.body;
     const athleteArray = [];
@@ -49,7 +49,7 @@ class PlannedTrainingController implements IRoutableController {
     }
 
     plannedTraining.athletes = athleteArray;
-    console.log(plannedTraining);
+
 
     const response = await this.plannedTrainingService.insert(plannedTraining);
     if (response.error) return res.status(response.statusCode).send(response);

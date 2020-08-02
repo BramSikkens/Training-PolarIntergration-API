@@ -1,8 +1,9 @@
-import { ChildEntity, Column, OneToMany } from "typeorm";
+import { ChildEntity, Column, OneToMany, ManyToMany } from "typeorm";
 import User from "./User";
 import DailyMetric from "./DailyMetric";
 import TrainingZone from "./TrainingZone";
 import CompletedTraining from "./CompletedTraining";
+import PlannedTraining from "./PlannedTraining";
 
 @ChildEntity()
 export default class Athlete extends User {
@@ -17,4 +18,10 @@ export default class Athlete extends User {
     (completedTraining) => completedTraining.athlete
   )
   completedTrainings: CompletedTraining[];
+
+  @ManyToMany(
+    (type) => PlannedTraining,
+    (plannedTraining) => plannedTraining.athletes
+  )
+  plannedTrainings: PlannedTraining[];
 }

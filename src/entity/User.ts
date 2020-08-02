@@ -1,14 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  TableInheritance,
-} from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 import Event from "./Event";
-import PlannedTraining from "./PlannedTraining";
 import Training from "./Training";
 
 @Entity()

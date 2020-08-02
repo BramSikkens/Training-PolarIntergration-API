@@ -4,7 +4,7 @@ import Training from "./Training";
 
 @ChildEntity()
 export default class PlannedTraining extends Training {
-  @ManyToMany((type) => Athlete)
+  @ManyToMany((type) => Athlete, (athlete) => athlete.plannedTrainings)
   @JoinTable()
   athletes: Athlete[];
 
