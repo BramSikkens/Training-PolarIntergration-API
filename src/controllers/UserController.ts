@@ -1,13 +1,16 @@
 import IRoutableController from "../interfaces/IRoutableController";
 import UserService from "../services/UserService";
-import express from "express";
-import { Response, Request } from "express";
+import express, { Request } from "express";
+import { Response } from "express";
 import User from "../entity/User";
 import { ReturnUserDto } from "../DTO/RequestDTOs";
 import ErrorDTO from "../DTO/ErrorDTO";
 import { mapToUserDTO } from "../helpers/Mappers";
 import EventService from "../services/EventService";
 import Event from "../entity/Event";
+import passport from "passport";
+import console from "console";
+
 class UserController implements IRoutableController {
   public path: string = "/users";
   public router: express.Router = express.Router();
@@ -24,6 +27,9 @@ class UserController implements IRoutableController {
     this.update = this.update.bind(this);
     this.addEventToUser = this.addEventToUser.bind(this);
     this.removeEventFromUser = this.removeEventFromUser.bind(this);
+    this.login = this.login.bind(this);
+    this.register = this.register.bind(this);
+    this.loginAccesToken = this.loginAccesToken.bind(this);
   }
 
   public initializeRoutes(): void {
@@ -39,6 +45,12 @@ class UserController implements IRoutableController {
       this.removeEventFromUser.bind(this)
     );
     this.router.put(this.path + "/:userId", this.update.bind(this));
+    this.router.post(this.path + "/login", this.login.bind(this));
+    this.router.post(this.path + "/register", this.register.bind(this));
+    this.router.post(
+      this.path + "/login/token",
+      this.loginAccesToken.bind(this)
+    );
   }
 
   async create(req: Request, res: Response): Promise<Response<any>> {
@@ -106,7 +118,31 @@ class UserController implements IRoutableController {
     await this.userService.insert(user);
   }
 
+  async login(req: Request, res: Response, next: any) {
+    passport.authenticate("login", { session: false }, (err, user) => {
+      console.log("ok");
+      if (err) {
+        return res.status(800).send(err);
+      }
+      return res.status(200).send(user);
+    })(req, res, next);
+  }
 
+  async loginAccesToken(req: Request, res: Response, next: any) {
+    passport.authenticate("jwt", { session: false }, (err, user) => {
+      if (err) {
+        return res.status(800).send(err);
+      }
+      return res.status(200).send(user);
+    })(req, res, next);
+  }
+
+  async register(req: Request, res: Response, next: any) {
+    passport.authenticate("register", (err, user, info) => {
+      console.log(info);
+      console.log(user);
+    })(req, res, next);
+  }
 }
 
 export default new UserController(

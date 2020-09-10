@@ -20,7 +20,7 @@ export default class Team {
   @ManyToOne((type) => Trainer, (trainer) => trainer.teams)
   trainer: Trainer;
 
-  @ManyToMany((type) => User)
+  @ManyToMany((type) => User, { cascade: true })
   @JoinTable()
   users: User[];
 }

@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  ManyToMany,
+} from "typeorm";
 import User from "./User";
 
 @Entity()
@@ -17,4 +23,7 @@ export default class Event {
 
   @Column()
   type: string;
+
+  @ManyToMany((type) => User, (user) => user.events, { cascade: true })
+  users: User[];
 }

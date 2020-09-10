@@ -1,6 +1,8 @@
-import * as bodyParser from "body-parser";
+import bodyparser from "body-parser";
 import express from "express";
 import IRoutableController from "./interfaces/IRoutableController";
+import cors from "cors";
+import passport from "./services/PassportLocalStrategyService";
 
 class App {
   public app: express.Application;
@@ -8,6 +10,7 @@ class App {
 
   constructor(controllers: IRoutableController[], port: number) {
     this.app = express();
+
     this.port = port;
 
     this.initializeMiddlewares();
@@ -15,7 +18,11 @@ class App {
   }
 
   private initializeMiddlewares() {
-    this.app.use(bodyParser.json());
+    this.app.use(cors());
+    this.app.use(bodyparser.urlencoded({ extended: true }));
+    this.app.use(bodyparser.json());
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
   }
 
   private initializeControllers(controllers: IRoutableController[]) {

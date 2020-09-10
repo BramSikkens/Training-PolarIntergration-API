@@ -59,7 +59,7 @@ class MacroCycleController implements IRoutableController {
   async getMacroCycleById(req: Request, res: Response) {
     const { macrocycleId } = req.params;
     const response = await this.macrocycleService.getById(macrocycleId, {
-      relations: ["users"],
+      relations: ["mesoCycles"],
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);

@@ -1,13 +1,12 @@
-import { ChildEntity, Column, OneToMany, ManyToMany } from "typeorm";
+import { ChildEntity, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import User from "./User";
 import DailyMetric from "./DailyMetric";
 import TrainingZone from "./TrainingZone";
 import CompletedTraining from "./CompletedTraining";
-import PlannedTraining from "./PlannedTraining";
 
 @ChildEntity()
 export default class Athlete extends User {
-  @OneToMany((type) => DailyMetric, (dailyMetric) => dailyMetric.athletes)
+  @OneToMany((type) => DailyMetric, (dailyMetric) => dailyMetric.athlete)
   dailyMetrics: DailyMetric[];
 
   @OneToMany((type) => TrainingZone, (trainingZone) => trainingZone.athletes)
@@ -19,9 +18,5 @@ export default class Athlete extends User {
   )
   completedTrainings: CompletedTraining[];
 
-  @ManyToMany(
-    (type) => PlannedTraining,
-    (plannedTraining) => plannedTraining.athletes
-  )
-  plannedTrainings: PlannedTraining[];
+
 }

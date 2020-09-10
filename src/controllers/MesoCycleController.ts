@@ -40,23 +40,23 @@ class MesoCycleController implements IRoutableController {
   }
 
   async deleteMesoCycle(req: Request, res: Response) {
-    const { MesocycleId } = req.params;
-    const response = await this.mesocycleService.remove(MesocycleId);
+    const { mesocycleId } = req.params;
+    const response = await this.mesocycleService.remove(mesocycleId);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(200).send(response);
   }
 
   async updateMesoCycle(req: Request, res: Response) {
-    const { MesocycleId } = req.params;
-    const response = await this.mesocycleService.update(MesocycleId, req.body);
+    const { mesocycleId } = req.params;
+    const response = await this.mesocycleService.update(mesocycleId, req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
 
   async getMesoCycleById(req: Request, res: Response) {
-    const { MesocycleId } = req.params;
-    const response = await this.mesocycleService.getById(MesocycleId, {
-      relations: ["users"],
+    const { mesocycleId } = req.params;
+    const response = await this.mesocycleService.getById(mesocycleId, {
+      relations: ["microcycles"],
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);

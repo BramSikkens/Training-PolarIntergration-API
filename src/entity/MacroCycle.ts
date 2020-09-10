@@ -4,6 +4,9 @@ import { MesoCycle } from "./MesoCycle";
 
 @Entity()
 export class MacroCycle extends Cycle {
-  @OneToMany((type) => MesoCycle, (mesoCycle) => mesoCycle.macroCycle)
+  @OneToMany((type) => MesoCycle, (mesoCycle) => mesoCycle.macroCycle, {
+    cascade: true,
+    eager: true,
+  })
   mesoCycles: MesoCycle[];
 }

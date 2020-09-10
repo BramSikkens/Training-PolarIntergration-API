@@ -4,13 +4,26 @@ import Athlete from "./Athlete";
 @Entity()
 export default class DailyMetric {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column()
-  sleepingHours: number;
+  sleepQuality: number;
 
   @Column()
-  feelingSick: number;
+  fatigue: number;
+
+  @Column()
+  soreness: number;
+  @Column()
+  stress: number;
+  @Column()
+  overalFeeling: number;
+
+  @Column()
+  sickness: number;
+
+  @Column()
+  injury: number;
 
   @Column()
   weight: number;
@@ -19,5 +32,5 @@ export default class DailyMetric {
   date: Date;
 
   @ManyToOne((type) => Athlete, (athlete) => athlete.dailyMetrics)
-  athletes: Athlete;
+  athlete: Athlete;
 }

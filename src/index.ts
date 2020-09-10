@@ -3,16 +3,17 @@ import dotenv from "dotenv";
 import { createConnection } from "typeorm";
 import App from "./app";
 import AthleteController from "./controllers/AthleteController";
-import UserController from "./controllers/UserController";
-import TrainerController from "./controllers/TrainerController";
-import TeamController from "./controllers/TeamController";
-import EventController from "./controllers/EventController";
-import DailyMetricController from "./controllers/DailyMetricController";
-import TrainingZoneController from "./controllers/TrainingZoneController";
-import PlannedTrainingController from "./controllers/PlannedTrainingController";
 import CompletedTrainingController from "./controllers/CompletedTrainingController";
+import DailyMetricController from "./controllers/DailyMetricController";
+import EventController from "./controllers/EventController";
 import MacroCycleController from "./controllers/MacroCycleController";
 import MesoCycleController from "./controllers/MesoCycleController";
+import MicroCycleController from "./controllers/MicroCycleController";
+import PlannedTrainingController from "./controllers/PlannedTrainingController";
+import TeamController from "./controllers/TeamController";
+import TrainerController from "./controllers/TrainerController";
+import TrainingZoneController from "./controllers/TrainingZoneController";
+import UserController from "./controllers/UserController";
 
 (async () => {
   const env = dotenv.config();
@@ -35,6 +36,7 @@ import MesoCycleController from "./controllers/MesoCycleController";
       CompletedTrainingController,
       MacroCycleController,
       MesoCycleController,
+      MicroCycleController,
     ],
     // tslint:disable-next-line: radix
     parseInt(process.env.PORT)

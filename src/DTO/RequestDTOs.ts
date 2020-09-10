@@ -24,7 +24,6 @@ export interface ReturnUserDto {
   dateOfBirth: string;
   club: string;
   type?: string;
-
 }
 
 export interface ReturnTrainerDto extends ReturnUserDto {

@@ -21,6 +21,10 @@ class PlannedTrainingController implements IRoutableController {
 
   initializeRoutes(): void {
     this.router.post(this.path, this.createPlannedTraining.bind(this));
+    this.router.get(
+      this.path + "/users",
+      this.getPlannedTrainingFromAthletes.bind(this)
+    );
     this.router.delete(
       this.path + "/:plannedTrainingId",
       this.deletePlannedTraining.bind(this)
@@ -29,6 +33,7 @@ class PlannedTrainingController implements IRoutableController {
       this.path + "/:plannedTrainingId",
       this.getPlannedTrainingById.bind(this)
     );
+
     this.router.put(
       this.path + "/:plannedTrainingId",
       this.updatePlannedTraining.bind(this)
@@ -37,21 +42,20 @@ class PlannedTrainingController implements IRoutableController {
 
   // NAKIJKEN!
   async createPlannedTraining(req: Request, res: Response) {
-    const plannedTraining = req.body;
-    const athleteArray = [];
+    // const plannedTraining = req.body;
+    // const athleteArray = [];
 
-    if (req.body.athletes) {
-      // Adding athletes
-      for (const athleteId of plannedTraining.athletes) {
-        const athlete: Athlete = await this.athleteService.getById(athleteId);
-        athleteArray.push(athlete);
-      }
-    }
+    // if (req.body.athletes) {
+    //   // Adding athletes
+    //   for (const athleteId of plannedTraining.athletes) {
+    //     const athlete: Athlete = await this.athleteService.getById(athleteId);
+    //     athleteArray.push(athlete);
+    //   }
+    // }
 
-    plannedTraining.athletes = athleteArray;
+    // plannedTraining.athletes = athleteArray;
 
-
-    const response = await this.plannedTrainingService.insert(plannedTraining);
+    const response = await this.plannedTrainingService.insert(req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
@@ -62,7 +66,7 @@ class PlannedTrainingController implements IRoutableController {
       plannedTrainingId
     );
     if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(200).send(response);
+    return res.status(200).send(plannedTrainingId);
   }
 
   async updatePlannedTraining(req: Request, res: Response) {
@@ -85,6 +89,17 @@ class PlannedTrainingController implements IRoutableController {
     );
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
+  }
+
+  async getPlannedTrainingFromAthletes(req: Request, res: Response) {
+    try {
+      const plannedTrainings = await this.plannedTrainingService.getPlannedTrainingsOfUser(
+        req.query.userIds
+      );
+      return res.status(201).send(plannedTrainings);
+    } catch (error) {
+      return error;
+    }
   }
 }
 

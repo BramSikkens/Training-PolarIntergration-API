@@ -75,12 +75,17 @@ export default abstract class BaseService<T> implements IBaseService {
   }
   async update(id: string, data: any): Promise<any> {
     const repository = getRepository(this.model);
+    const object: T = await repository.findOne(id);
     try {
-      const updatedResult: UpdateResult = await repository.update(id, data);
+      const updatedResult: any = await repository.save({
+        ...object,
+        ...data,
+      });
       if (updatedResult) {
         return updatedResult;
       }
     } catch (error) {
+      console.log(error);
       return {
         error: true,
         statusCode: 400,

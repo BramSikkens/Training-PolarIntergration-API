@@ -1,4 +1,4 @@
-import { ChildEntity, OneToMany } from "typeorm";
+import { ChildEntity, OneToMany, Column } from "typeorm";
 import User from "./User";
 import Team from "./Team";
 
@@ -6,4 +6,6 @@ import Team from "./Team";
 export default class Trainer extends User {
   @OneToMany((type) => Team, (team) => team.trainer)
   teams: Team[];
+
+  role: string;
 }

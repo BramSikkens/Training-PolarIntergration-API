@@ -1,6 +1,6 @@
-import User from "../entity/User";
+import { ReturnTrainerDto, ReturnUserDto } from "../DTO/RequestDTOs";
 import Trainer from "../entity/Trainer";
-import { ReturnUserDto, ReturnTrainerDto } from "../DTO/RequestDTOs";
+import User from "../entity/User";
 
 export function mapToTrainerDTO(trainer: Trainer): ReturnTrainerDto {
   const returnObject: ReturnTrainerDto = {

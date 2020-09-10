@@ -4,7 +4,7 @@ module.exports = {
   host: process.env.DATABASE_HOST,
   port: process.env.DATABASE_PORT,
   username: process.env.DATABASE_DATABASEUSERNAME,
-  password: "",
+  password: process.env.DATABASE_DATABASEPASSWORD,
   database: process.env.DATABASE_DATABASENAME,
   synchronize: true,
   logging: false,
