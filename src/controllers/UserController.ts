@@ -114,13 +114,12 @@ class UserController implements IRoutableController {
     });
 
     user.events = user.events.filter((item) => item.id.toString() !== eventId);
-    console.log(user);
+
     await this.userService.insert(user);
   }
 
   async login(req: Request, res: Response, next: any) {
     passport.authenticate("login", { session: false }, (err, user) => {
-      console.log("ok");
       if (err) {
         return res.status(800).send(err);
       }

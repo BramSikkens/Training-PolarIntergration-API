@@ -76,7 +76,7 @@ class DailyMetricController implements IRoutableController {
   async getdailyMetricsFromUsers(req: Request, res: Response) {
     // tslint:disable-next-line: one-variable-per-declaration
     const userIds = new Array(req.query.userIds);
-    console.log(userIds);
+
     const response = await this.DailyMetricService.getAll({
       where: {
         athlete: { id: In(userIds) },

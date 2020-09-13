@@ -85,7 +85,7 @@ export default abstract class BaseService<T> implements IBaseService {
         return updatedResult;
       }
     } catch (error) {
-      console.log(error);
+
       return {
         error: true,
         statusCode: 400,

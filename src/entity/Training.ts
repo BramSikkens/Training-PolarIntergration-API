@@ -10,8 +10,8 @@ import User from "./User";
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export default class Training {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   title: string;
@@ -21,6 +21,9 @@ export default class Training {
 
   @Column()
   template: boolean;
+
+  @Column({ length: 1000 })
+  trainingData: string;
 
   @ManyToOne((type) => User, (user) => user.trainings)
   owner: User;

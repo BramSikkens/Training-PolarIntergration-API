@@ -59,7 +59,7 @@ passport.use(
         return done(null, false, { message: "No full user body" });
       }
 
-      console.log(req.body);
+
 
       const user = await userService.findUserByName(username);
       if (user) {
@@ -101,6 +101,7 @@ passport.use(
       secretOrKey: "secret",
     },
     async (jwtPayload: any, done: any) => {
+
       const user: User = await userService.findUserByName(jwtPayload.username);
 
       if (!user) {

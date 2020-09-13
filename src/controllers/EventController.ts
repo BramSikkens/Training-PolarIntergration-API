@@ -32,7 +32,7 @@ class EventController implements IRoutableController {
   async createEvent(req: Request, res: Response) {
     const response = await this.eventService.insert(req.body);
     if (response.error) return res.status(response.statusCode).send(response);
-    console.log(response);
+
     return res.status(201).send(response);
   }
 

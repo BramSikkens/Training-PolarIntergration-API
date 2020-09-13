@@ -3,6 +3,7 @@ import User from "./User";
 import DailyMetric from "./DailyMetric";
 import TrainingZone from "./TrainingZone";
 import CompletedTraining from "./CompletedTraining";
+import PlannedTraining from "./PlannedTraining";
 
 @ChildEntity()
 export default class Athlete extends User {
@@ -18,5 +19,12 @@ export default class Athlete extends User {
   )
   completedTrainings: CompletedTraining[];
 
-
+  @ManyToMany(
+    (type) => PlannedTraining,
+    (plannedTraining) => plannedTraining.athletes,
+    {
+      cascade: ["insert", "update"],
+    }
+  )
+  plannedTrainings: PlannedTraining[];
 }

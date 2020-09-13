@@ -126,7 +126,7 @@ class AthleteController implements IRoutableController {
     user.events = user.events.filter(
       (item) => item.id.toString() !== trainingZoneId
     );
-    console.log(user);
+
     await this.athleteService.insert(user);
   }
 

@@ -76,6 +76,7 @@ class PlannedTrainingController implements IRoutableController {
       req.body
     );
     if (response.error) return res.status(response.statusCode).send(response);
+    response.trainingData = JSON.parse(response.trainingData);
     return res.status(201).send(response);
   }
 
@@ -88,6 +89,7 @@ class PlannedTrainingController implements IRoutableController {
       }
     );
     if (response.error) return res.status(response.statusCode).send(response);
+    response.trainingData = JSON.parse(response.trainingData);
     return res.status(201).send(response);
   }
 
@@ -96,6 +98,7 @@ class PlannedTrainingController implements IRoutableController {
       const plannedTrainings = await this.plannedTrainingService.getPlannedTrainingsOfUser(
         req.query.userIds
       );
+
       return res.status(201).send(plannedTrainings);
     } catch (error) {
       return error;

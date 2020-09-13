@@ -10,7 +10,6 @@ export default class PlannedTrainingService extends BaseService<
   }
 
   async getPlannedTrainingsOfUser(_userIds: any): Promise<any> {
-    console.log(typeof _userIds);
     const repository: Repository<PlannedTraining> = getRepository(this.model);
     try {
       const plannedTrainings = await repository
@@ -25,11 +24,8 @@ export default class PlannedTrainingService extends BaseService<
         )
         .getMany();
 
-      console.log(plannedTrainings);
-
       return plannedTrainings;
     } catch (error) {
-      console.log(error);
       return {
         error: true,
         statusCode: 500,

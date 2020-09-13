@@ -40,7 +40,7 @@ export default class EventService extends BaseService<Event> {
         return result;
       }
     } catch (error) {
-      console.log(error);
+
       return {
         error: true,
         statusCode: 400,

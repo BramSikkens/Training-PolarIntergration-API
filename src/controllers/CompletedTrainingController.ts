@@ -50,7 +50,6 @@ class CompletedTrainingController implements IRoutableController {
       completedTraining.athlete = athlete;
     }
 
-    console.log(completedTraining);
     const response = await this.completedTrainingService.insert(
       completedTraining
     );

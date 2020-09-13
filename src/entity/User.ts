@@ -15,8 +15,8 @@ import PlannedTraining from "./PlannedTraining";
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export default class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   username: string;
@@ -45,13 +45,6 @@ export default class User {
   @ManyToMany((type) => Event, (event) => event.users)
   @JoinTable()
   events: Event[];
-
-  @ManyToMany(
-    (type) => PlannedTraining,
-    (plannedTraining) => plannedTraining.athletes
-  )
-  @JoinTable()
-  plannedTrainings: PlannedTraining[];
 
   @OneToMany((type) => Training, (training) => training.owner)
   trainings: Training[];
