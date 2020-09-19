@@ -56,6 +56,7 @@ class PlannedTrainingController implements IRoutableController {
     // plannedTraining.athletes = athleteArray;
 
     const response = await this.plannedTrainingService.insert(req.body);
+    response.trainingData = JSON.parse(response.trainingData);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }

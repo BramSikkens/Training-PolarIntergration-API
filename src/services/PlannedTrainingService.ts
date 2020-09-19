@@ -24,6 +24,10 @@ export default class PlannedTrainingService extends BaseService<
         )
         .getMany();
 
+      plannedTrainings.forEach((plannedTraining) => {
+        plannedTraining.trainingData = JSON.parse(plannedTraining.trainingData);
+      });
+
       return plannedTrainings;
     } catch (error) {
       return {
