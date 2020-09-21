@@ -17,4 +17,4 @@ RUN npm install
 EXPOSE 5000
 
 
-CMD [ "node","." ]
+CMD [ "node","dist" ]
