@@ -1,20 +1,18 @@
-FROM node:10
+FROM node:10 AS builder
 
 # Create app directory
-WORKDIR /usr/src/app
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# Bundle app source
+WORKDIR /app
 COPY . .
 
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm run build
 
+FROM node:10
+WORKDIR /app
+
+COPY --from=builder /app/dist .
 
 EXPOSE 5000
 
 
-CMD [ "node","dist" ]
+CMD [ "node","." ]
