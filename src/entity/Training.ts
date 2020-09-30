@@ -19,9 +19,6 @@ export default class Training {
   @Column()
   type: string;
 
-  @Column()
-  template: boolean;
-
   @Column({ length: 1000 })
   trainingData: string;
 

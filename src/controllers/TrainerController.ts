@@ -17,11 +17,16 @@ class TrainerController implements IRoutableController {
     this.createTrainer = this.createTrainer.bind(this);
     this.updateTrainer = this.updateTrainer.bind(this);
     this.deleteTrainer = this.deleteTrainer.bind(this);
+    this.getTeamsOfTrainer = this.getTeamsOfTrainer.bind(this);
   }
 
   public initializeRoutes(): void {
-    this.router.post(this.path, this.createTrainer.bind(this));
+    this.router.get(
+      this.path + "/:userId/teams",
+      this.getTeamsOfTrainer.bind(this)
+    );
     this.router.get(this.path + "/:userid", this.getTrainerById.bind(this));
+    this.router.post(this.path, this.createTrainer.bind(this));
     this.router.put(this.path + "/:userId", this.createTrainer.bind(this));
     this.router.delete(this.path + "/:userId", this.deleteTrainer.bind(this));
   }
@@ -48,10 +53,12 @@ class TrainerController implements IRoutableController {
 
   async getTrainerById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
+    console.log(userid);
     try {
       const serviceResponse = await this.trainerService.getById(userid, {
         relations: ["teams"],
       });
+      console.log(serviceResponse);
       if ((serviceResponse as Trainer).teams) {
         const returnObject = mapToTrainerDTO(serviceResponse);
         return res.status(200).send(returnObject);
@@ -62,6 +69,25 @@ class TrainerController implements IRoutableController {
       }
     } catch (err) {
       return res.status(500).send(err);
+    }
+  }
+
+  async getTeamsOfTrainer(req: Request, res: Response): Promise<any> {
+    const { userId } = req.params;
+    try {
+      const serviceResponse = await this.trainerService.getById(userId, {
+        relations: ["teams"],
+      });
+
+      if ((serviceResponse as Trainer).teams) {
+        return res.status(200).send(serviceResponse.teams);
+      } else if ((serviceResponse as ErrorDTO).message) {
+        return res
+          .status((serviceResponse as ErrorDTO).statusCode)
+          .send(serviceResponse);
+      }
+    } catch (error) {
+      return res.status(500).send(error);
     }
   }
 }

@@ -14,6 +14,7 @@ import TeamController from "./controllers/TeamController";
 import TrainerController from "./controllers/TrainerController";
 import TrainingZoneController from "./controllers/TrainingZoneController";
 import UserController from "./controllers/UserController";
+import TrainingTemplateController from "./controllers/TrainingTemplateController";
 
 (async () => {
   const env = dotenv.config();
@@ -25,9 +26,9 @@ import UserController from "./controllers/UserController";
   }
   const app = new App(
     [
+      TrainerController,
       AthleteController,
       UserController,
-      TrainerController,
       TeamController,
       EventController,
       DailyMetricController,
@@ -37,6 +38,7 @@ import UserController from "./controllers/UserController";
       MacroCycleController,
       MesoCycleController,
       MicroCycleController,
+      TrainingTemplateController,
     ],
     // tslint:disable-next-line: radix
     parseInt(process.env.PORT)

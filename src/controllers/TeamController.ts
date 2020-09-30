@@ -21,6 +21,7 @@ class TeamController implements IRoutableController {
     this.deleteTeam = this.deleteTeam.bind(this);
     this.getTeamById = this.getTeamById.bind(this);
     this.updateTeam = this.updateTeam.bind(this);
+    this.getUsersOfTeam = this.getUsersOfTeam.bind(this);
   }
 
   public initializeRoutes(): void {
@@ -31,6 +32,11 @@ class TeamController implements IRoutableController {
     this.router.delete(
       this.path + "/:teamId/users/:userId",
       this.removeUserFromTeam.bind(this)
+    );
+
+    this.router.get(
+      this.path + "/:teamId/users",
+      this.getUsersOfTeam.bind(this)
     );
 
     this.router.post(this.path, this.createTeam.bind(this));
@@ -87,6 +93,15 @@ class TeamController implements IRoutableController {
     const response = await this.teamService.update(teamId, req.body);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
+  }
+
+  async getUsersOfTeam(req: Request, res: Response): Promise<any> {
+    const { teamId } = req.params;
+    const response = await this.teamService.getById(teamId, {
+      relations: ["users"],
+    });
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response.users);
   }
 }
 

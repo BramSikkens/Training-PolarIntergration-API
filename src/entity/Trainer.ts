@@ -4,8 +4,9 @@ import Team from "./Team";
 
 @ChildEntity()
 export default class Trainer extends User {
-  @OneToMany((type) => Team, (team) => team.trainer)
+  @OneToMany((type) => Team, (team) => team.trainer, { cascade: true })
   teams: Team[];
 
   role: string;
 }
+git 
