@@ -60,11 +60,13 @@ class TeamController implements IRoutableController {
 
   async addUserToTeam(req: Request, res: Response): Promise<any> {
     const { teamId, userId } = req.params;
-    const user: User = await (await this.userService.getById(userId))
-      .singleItem;
+    console.log(userId);
+    const user: User = await this.userService.getById(userId);
+
+    console.log(user);
     const savedTeam: Team = await this.teamService.addUserToTeam(user, teamId);
     if (savedTeam) {
-      return res.status(201).send(savedTeam);
+      return res.status(201).send(user);
     }
   }
 

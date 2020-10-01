@@ -9,4 +9,3 @@ export default class Trainer extends User {
 
   role: string;
 }
-git 

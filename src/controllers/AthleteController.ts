@@ -39,6 +39,7 @@ class AthleteController implements IRoutableController {
     );
     this.addDailyMetricToAthlete = this.addDailyMetricToAthlete.bind(this);
     this.removeTrainingZoneFromUser = this.removeDailyMetricFromUser.bind(this);
+    this.getUserTrainingzones = this.getUserTrainingzones.bind(this);
   }
 
   public initializeRoutes(): void {
@@ -54,6 +55,10 @@ class AthleteController implements IRoutableController {
     );
 
     this.router.get(this.path + "/:userid", this.getAthleteById.bind(this));
+    this.router.get(
+      this.path + "/:userid/trainingzones",
+      this.getUserTrainingzones.bind(this)
+    );
     this.router.delete(this.path + "/:userId", this.delete.bind(this));
     this.router.delete(
       this.path + "/userId/trainingzones/:trainingZoneId",
@@ -159,6 +164,14 @@ class AthleteController implements IRoutableController {
       (item) => item.id.toString() !== metricId
     );
     await this.athleteService.insert(user);
+  }
+
+  async getUserTrainingzones(req: Request, res: Response) {
+    const { userId } = req.params;
+    const athlete: Athlete = await this.athleteService.getById(userId, {
+      relations: ["trainingZones"],
+    });
+    return res.status(200).send(athlete.trainingZones);
   }
 }
 

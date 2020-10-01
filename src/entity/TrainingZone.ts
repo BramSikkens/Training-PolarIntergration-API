@@ -30,6 +30,6 @@ export default class TrainingZone {
   @Column()
   dateCreated: Date;
 
-  @ManyToOne((type) => Athlete, (athlete) => athlete.dailyMetrics)
+  @ManyToOne((type) => Athlete, (athlete) => athlete.trainingZones)
   athletes: Athlete;
 }
