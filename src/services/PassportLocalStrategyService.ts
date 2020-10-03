@@ -7,8 +7,12 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import Athlete from "../entity/Athlete";
 import Trainer from "../entity/Trainer";
+import AthleteService from "./AthleteService";
+import TrainerService from "./TrainerService";
 
 const userService = new UserService(User);
+const athleteServie = new AthleteService(Athlete);
+const trainerService = new TrainerService(Trainer);
 const LocalStrategy = passportLocal.Strategy;
 const JWTStrategy = jwtStrategy.Strategy;
 const ExtractJWT = jwtStrategy.ExtractJwt;
@@ -59,8 +63,6 @@ passport.use(
         return done(null, false, { message: "No full user body" });
       }
 
-
-
       const user = await userService.findUserByName(username);
       if (user) {
         return done(null, false, { message: "username already taken" });
@@ -87,7 +89,19 @@ passport.use(
       newUser.data = req.body.data;
       newUser.role = req.body.role;
 
-      const userSaved = await userService.insert(newUser);
+      let userSaved = null;
+
+      switch (req.body.type) {
+        case "Athlete":
+          {
+            userSaved = await athleteServie.insert(newUser as Athlete);
+          }
+          break;
+        case "Coach": {
+          userSaved = await trainerService.insert(newUser as Trainer);
+        }
+      }
+
       return done(null, userSaved);
     }
   )
@@ -101,7 +115,6 @@ passport.use(
       secretOrKey: "secret",
     },
     async (jwtPayload: any, done: any) => {
-
       const user: User = await userService.findUserByName(jwtPayload.username);
 
       if (!user) {

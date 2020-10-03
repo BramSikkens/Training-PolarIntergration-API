@@ -29,28 +29,28 @@ class AthleteController implements IRoutableController {
     this.PlannedTrainingService = plannedTrainingService;
 
     this.initializeRoutes();
-    this.getAthleteById = this.getAthleteById.bind(this);
-    this.delete = this.delete.bind(this);
-    this.insert = this.insert.bind(this);
-    this.updateAthlete = this.updateAthlete.bind(this);
-    this.addTrainingZoneToAthlete = this.addTrainingZoneToAthlete.bind(this);
-    this.removeTrainingZoneFromUser = this.removeTrainingZoneFromUser.bind(
-      this
-    );
-    this.addDailyMetricToAthlete = this.addDailyMetricToAthlete.bind(this);
-    this.removeTrainingZoneFromUser = this.removeDailyMetricFromUser.bind(this);
-    this.getUserTrainingzones = this.getUserTrainingzones.bind(this);
+    // //this.getAthleteById = this.getAthleteById.bind(this);
+    // this.delete = this.delete.bind(this);
+    // this.insert = this.insert.bind(this);
+    // this.updateAthlete = this.updateAthlete.bind(this);
+    // this.addTrainingZoneToAthlete = this.addTrainingZoneToAthlete.bind(this);
+    // this.removeTrainingZoneFromUser = this.removeTrainingZoneFromUser.bind(
+    //   this
+    // );
+    // this.addDailyMetricToAthlete = this.addDailyMetricToAthlete.bind(this);
+    // this.removeTrainingZoneFromUser = this.removeDailyMetricFromUser.bind(this);
+    // this.getUserTrainingzones = this.getUserTrainingzones.bind(this);
   }
 
   public initializeRoutes(): void {
     this.router.post(this.path, this.insert.bind(this));
     this.router.post(
-      this.path + "/userId/trainingzones/:trainingZoneId",
+      this.path + "/:userId/trainingzones",
       this.addTrainingZoneToAthlete.bind(this)
     );
 
     this.router.post(
-      this.path + "/userId/dailymetrics/:metricId",
+      this.path + "/:userId/dailymetrics/:metricId",
       this.addDailyMetricToAthlete.bind(this)
     );
 
@@ -75,7 +75,7 @@ class AthleteController implements IRoutableController {
   async getAthleteById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
     const response = await this.athleteService.getById(userid, {
-      relations: ["completedTrainings", "plannedTrainings"],
+      relations: ["completedTrainings", "plannedTrainings", "trainingZones"],
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
@@ -102,20 +102,27 @@ class AthleteController implements IRoutableController {
   }
 
   async addTrainingZoneToAthlete(req: any, res: any) {
-    const { trainingZoneId, userId } = req.params;
-    const trainingZone: TrainingZone = await this.trainingZoneService.getById(
-      trainingZoneId
-    );
+    console.log("ok");
+    const { userId } = req.params;
 
     const user: Athlete = await this.athleteService.getById(userId, {
       relations: ["trainingZones"],
     });
+
     if (!user.trainingZones) {
       user.trainingZones = [];
     }
 
-    user.trainingZones.push(trainingZone);
-    await this.athleteService.insert(user);
+    if (Array.isArray(req.body)) {
+      req.body.forEach((trainingZone: TrainingZone) => {
+        user.trainingZones.push(trainingZone);
+      });
+    } else {
+      user.trainingZones.push(req.body as TrainingZone);
+    }
+
+    const insertResult = await this.athleteService.insert(user);
+    res.status(200).send(insertResult);
   }
 
   async removeTrainingZoneFromUser(req: Request, res: Response) {
@@ -168,6 +175,7 @@ class AthleteController implements IRoutableController {
 
   async getUserTrainingzones(req: Request, res: Response) {
     const { userId } = req.params;
+
     const athlete: Athlete = await this.athleteService.getById(userId, {
       relations: ["trainingZones"],
     });

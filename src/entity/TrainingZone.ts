@@ -7,7 +7,7 @@ export default class TrainingZone {
   id: number;
 
   @Column()
-  zoneType: number;
+  zoneType: string;
 
   @Column()
   maxHr: number;
@@ -27,7 +27,7 @@ export default class TrainingZone {
   @Column()
   maxSpd: number;
 
-  @Column()
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   dateCreated: Date;
 
   @ManyToOne((type) => Athlete, (athlete) => athlete.trainingZones)

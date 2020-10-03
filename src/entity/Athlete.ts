@@ -10,7 +10,9 @@ export default class Athlete extends User {
   @OneToMany((type) => DailyMetric, (dailyMetric) => dailyMetric.athlete)
   dailyMetrics: DailyMetric[];
 
-  @OneToMany((type) => TrainingZone, (trainingZone) => trainingZone.athletes)
+  @OneToMany((type) => TrainingZone, (trainingZone) => trainingZone.athletes, {
+    cascade: true,
+  })
   trainingZones: TrainingZone[];
 
   @OneToMany(
