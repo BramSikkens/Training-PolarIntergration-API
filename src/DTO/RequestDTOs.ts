@@ -23,6 +23,7 @@ export interface ReturnUserDto {
   email: string;
   dateOfBirth: string;
   club: string;
+  data?: any;
   type?: string;
 }
 

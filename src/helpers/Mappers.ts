@@ -22,6 +22,7 @@ export function mapToUserDTO(user: User): ReturnUserDto {
     email: user.email,
     dateOfBirth: user.dateOfBirth.toISOString(),
     club: user.club,
+    data: JSON.parse(user.data),
   };
 
   return returnObject;

@@ -125,6 +125,7 @@ passport.use(
           return done(null, false, { message: "password does not match" });
         }
       });
+      user.data = JSON.parse(user.data);
       return done(null, { user });
     }
   )

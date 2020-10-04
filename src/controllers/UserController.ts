@@ -62,6 +62,7 @@ class UserController implements IRoutableController {
   async update(req: Request, res: Response): Promise<Response<any>> {
     const { userId } = req.params;
     const response = await this.userService.update(userId, req.body);
+    response.data = JSON.parse(response.data);
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }
