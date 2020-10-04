@@ -56,7 +56,7 @@ class AthleteController implements IRoutableController {
 
     this.router.get(this.path + "/:userid", this.getAthleteById.bind(this));
     this.router.get(
-      this.path + "/:userid/trainingzones",
+      this.path + "/:userId/trainingzones",
       this.getUserTrainingzones.bind(this)
     );
     this.router.delete(this.path + "/:userId", this.delete.bind(this));
@@ -175,7 +175,7 @@ class AthleteController implements IRoutableController {
 
   async getUserTrainingzones(req: Request, res: Response) {
     const { userId } = req.params;
-
+    console.log(userId);
     const athlete: Athlete = await this.athleteService.getById(userId, {
       relations: ["trainingZones"],
     });

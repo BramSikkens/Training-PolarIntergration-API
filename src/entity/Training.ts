@@ -22,6 +22,9 @@ export default class Training {
   @Column({ length: 1000 })
   trainingData: string;
 
+  @Column()
+  duration: number;
+
   @ManyToOne((type) => User, (user) => user.trainings)
   owner: User;
 }
