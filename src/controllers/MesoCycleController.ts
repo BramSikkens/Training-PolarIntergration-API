@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { MicroCycle } from "../entity/MicroCycle";
 import { MesoCycle } from "../entity/MesoCycle";
 import IRoutableController from "../interfaces/IRoutableController";
 import MesoCycleService from "../services/MesoCycleService";
@@ -11,10 +12,6 @@ class MesoCycleController implements IRoutableController {
   constructor(mesocycleService: MesoCycleService) {
     this.mesocycleService = mesocycleService;
     this.initializeRoutes();
-    this.createMesoCycle = this.createMesoCycle.bind(this);
-    this.deleteMesoCycle = this.deleteMesoCycle.bind(this);
-    this.updateMesoCycle = this.updateMesoCycle.bind(this);
-    this.getMesoCycleById = this.getMesoCycleById.bind(this);
   }
 
   initializeRoutes(): void {
@@ -30,6 +27,16 @@ class MesoCycleController implements IRoutableController {
     this.router.put(
       this.path + "/:mesocycleId",
       this.updateMesoCycle.bind(this)
+    );
+
+    this.router.post(
+      this.path + "/:mesocycleId/microcycles",
+      this.AddMicroToMeso.bind(this)
+    );
+
+    this.router.get(
+      this.path + "/:mesocycleId/microcycles",
+      this.getMicrosOfMeso.bind(this)
     );
   }
 
@@ -53,6 +60,21 @@ class MesoCycleController implements IRoutableController {
     return res.status(201).send(response);
   }
 
+  async AddMicroToMeso(req: Request, res: Response) {
+    const { mesoCycleId } = req.params;
+    const microCycle: MicroCycle = req.body;
+    const mesoCycle = await this.mesocycleService.getById(mesoCycleId, {
+      relations: ["microcycles"],
+    });
+    if (mesoCycle.microcycles == null) {
+      mesoCycle.microcycles = [];
+    }
+
+    mesoCycle.microcycles.push(microCycle);
+    await this.mesocycleService.insert(mesoCycle);
+    return res.status(200).send(microCycle);
+  }
+
   async getMesoCycleById(req: Request, res: Response) {
     const { mesocycleId } = req.params;
     const response = await this.mesocycleService.getById(mesocycleId, {
@@ -60,6 +82,20 @@ class MesoCycleController implements IRoutableController {
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
+  }
+
+  async getMicrosOfMeso(req: Request, res: Response) {
+    const { mesocycleId } = req.params;
+    const response = await this.mesocycleService.getById(mesocycleId, {
+      relations: ["microcycles"],
+    });
+
+    console.log(response.microcycles);
+    response.microcycles.map((cycle: MicroCycle) => {
+      cycle.trainingZones = JSON.parse(cycle.trainingZones);
+    });
+    if (response.error) return res.status(response.statusCode).send(response);
+    return res.status(201).send(response.microcycles);
   }
 }
 

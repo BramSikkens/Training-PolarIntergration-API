@@ -5,4 +5,6 @@ export default class MesoCycleService extends BaseService<MesoCycle> {
   constructor(model: any) {
     super(model);
   }
+
+
 }

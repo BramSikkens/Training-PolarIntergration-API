@@ -1,6 +1,7 @@
-import { Entity, OneToMany } from "typeorm";
+import { Entity, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { Cycle } from "./Cycle";
 import { MesoCycle } from "./MesoCycle";
+import Athlete from "./Athlete";
 
 @Entity()
 export class MacroCycle extends Cycle {
@@ -9,4 +10,8 @@ export class MacroCycle extends Cycle {
     eager: true,
   })
   mesoCycles: MesoCycle[];
+
+  @ManyToMany((type) => Athlete, (athlete) => athlete.macroCycles)
+  @JoinTable()
+  athletes: Athlete[];
 }

@@ -10,6 +10,7 @@ export class MesoCycle extends Cycle {
 
   @OneToMany((type) => MicroCycle, (microCycle) => microCycle.mesoCycle, {
     eager: true,
+    cascade: true,
   })
   microcycles: MicroCycle[];
 }

@@ -11,14 +11,15 @@ export class MicroCycle extends Cycle {
   @Column()
   purpose: string;
 
-  @Column()
-  number: number;
 
   @Column()
-  payload: string;
+  trainingLoad: number;
 
   @Column()
-  TrainingZone: string;
+  trainingZones: string;
+
+  @Column()
+  color: string;
 
   @ManyToOne((type) => MesoCycle, (mesoCycle) => mesoCycle.microcycles)
   mesoCycle: MesoCycle;

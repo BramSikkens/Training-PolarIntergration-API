@@ -8,6 +8,8 @@ import DailyMetric from "../entity/DailyMetric";
 import DailyMetricService from "../services/DailyMetricService";
 import PlannedTrainingService from "../services/PlannedTrainingService";
 import PlannedTraining from "../entity/PlannedTraining";
+import { MacroCycle } from "../entity/MacroCycle";
+import MacroCycleService from "../services/MacroCycleService";
 
 class AthleteController implements IRoutableController {
   public path: string = "/athletes";
@@ -16,17 +18,20 @@ class AthleteController implements IRoutableController {
   private trainingZoneService: TrainingZoneService;
   private DailyMetricService: DailyMetricService;
   private PlannedTrainingService: PlannedTrainingService;
+  private MacroCycleService: MacroCycleService;
 
   constructor(
     athleteService: AthleteService,
     trainingZoneService: TrainingZoneService,
     dailymetricService: DailyMetricService,
-    plannedTrainingService: PlannedTrainingService
+    plannedTrainingService: PlannedTrainingService,
+    macroCycleService: MacroCycleService
   ) {
     this.trainingZoneService = trainingZoneService;
     this.athleteService = athleteService;
     this.DailyMetricService = dailymetricService;
     this.PlannedTrainingService = plannedTrainingService;
+    this.MacroCycleService = macroCycleService;
 
     this.initializeRoutes();
     // //this.getAthleteById = this.getAthleteById.bind(this);
@@ -54,6 +59,11 @@ class AthleteController implements IRoutableController {
       this.addDailyMetricToAthlete.bind(this)
     );
 
+    this.router.post(
+      this.path + "/:userId/macrocycles",
+      this.addMacroToAthlete.bind(this)
+    );
+
     this.router.get(this.path + "/:userid", this.getAthleteById.bind(this));
     this.router.get(
       this.path + "/:userId/trainingzones",
@@ -75,7 +85,7 @@ class AthleteController implements IRoutableController {
   async getAthleteById(req: Request, res: Response): Promise<any> {
     const { userid } = req.params;
     const response = await this.athleteService.getById(userid, {
-      relations: ["completedTrainings", "plannedTrainings", "trainingZones"],
+      relations: ["completedTrainings", "plannedTrainings", "trainingZones","macroCycles"],
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
@@ -181,11 +191,27 @@ class AthleteController implements IRoutableController {
     });
     return res.status(200).send(athlete.trainingZones);
   }
+
+  async addMacroToAthlete(req: Request, res: Response) {
+    const { userId } = req.params;
+    const macro: MacroCycle = req.body;
+    const athlete: Athlete = await this.athleteService.getById(userId, {
+      relations: ["macroCycles"],
+    });
+    if (athlete.macroCycles == null) {
+      athlete.macroCycles = [];
+    }
+    athlete.macroCycles.push(macro);
+
+    await this.athleteService.insert(athlete);
+    return res.status(200).send(athlete.macroCycles);
+  }
 }
 
 export default new AthleteController(
   new AthleteService(Athlete),
   new TrainingZoneService(TrainingZone),
   new DailyMetricService(DailyMetric),
-  new PlannedTrainingService(PlannedTraining)
+  new PlannedTrainingService(PlannedTraining),
+  new MacroCycleService(MacroCycle)
 );
