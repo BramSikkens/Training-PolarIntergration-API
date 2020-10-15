@@ -61,9 +61,9 @@ class MesoCycleController implements IRoutableController {
   }
 
   async AddMicroToMeso(req: Request, res: Response) {
-    const { mesoCycleId } = req.params;
+    const { mesocycleId } = req.params;
     const microCycle: MicroCycle = req.body;
-    const mesoCycle = await this.mesocycleService.getById(mesoCycleId, {
+    const mesoCycle = await this.mesocycleService.getById(mesocycleId, {
       relations: ["microcycles"],
     });
     if (mesoCycle.microcycles == null) {

@@ -55,7 +55,7 @@ class TeamController implements IRoutableController {
     const { teamId } = req.params;
     const response = await this.teamService.remove(teamId);
     if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(200).send(response);
+    return res.status(200).send(teamId);
   }
 
   async addUserToTeam(req: Request, res: Response): Promise<any> {
@@ -77,7 +77,7 @@ class TeamController implements IRoutableController {
       userId
     );
     if (team) {
-      return res.status(201).send(team);
+      return res.status(201).send(userId);
     }
   }
 
