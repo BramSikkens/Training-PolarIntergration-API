@@ -50,7 +50,7 @@ class MesoCycleController implements IRoutableController {
     const { mesocycleId } = req.params;
     const response = await this.mesocycleService.remove(mesocycleId);
     if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(200).send(response);
+    return res.status(200).send(mesocycleId);
   }
 
   async updateMesoCycle(req: Request, res: Response) {

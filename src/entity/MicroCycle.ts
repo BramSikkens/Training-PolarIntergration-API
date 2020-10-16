@@ -11,7 +11,6 @@ export class MicroCycle extends Cycle {
   @Column()
   purpose: string;
 
-
   @Column()
   trainingLoad: number;
 
@@ -21,6 +20,8 @@ export class MicroCycle extends Cycle {
   @Column()
   color: string;
 
-  @ManyToOne((type) => MesoCycle, (mesoCycle) => mesoCycle.microcycles)
+  @ManyToOne((type) => MesoCycle, (mesoCycle) => mesoCycle.microcycles, {
+    onDelete: "CASCADE",
+  })
   mesoCycle: MesoCycle;
 }

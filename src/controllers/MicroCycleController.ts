@@ -40,15 +40,18 @@ class MicroCycleController implements IRoutableController {
   }
 
   async deleteMicroCycle(req: Request, res: Response) {
-    const { MicrocycleId } = req.params;
-    const response = await this.microcycleService.remove(MicrocycleId);
+    const { microcycleId } = req.params;
+    const response = await this.microcycleService.remove(microcycleId);
     if (response.error) return res.status(response.statusCode).send(response);
-    return res.status(200).send(response);
+    return res.status(200).send(microcycleId);
   }
 
   async updateMicroCycle(req: Request, res: Response) {
     const { MicrocycleId } = req.params;
-    const response = await this.microcycleService.update(MicrocycleId, req.body);
+    const response = await this.microcycleService.update(
+      MicrocycleId,
+      req.body
+    );
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
   }

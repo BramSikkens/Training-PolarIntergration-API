@@ -8,6 +8,7 @@ export class MacroCycle extends Cycle {
   @OneToMany((type) => MesoCycle, (mesoCycle) => mesoCycle.macroCycle, {
     cascade: true,
     eager: true,
+    onDelete: "CASCADE",
   })
   mesoCycles: MesoCycle[];
 
