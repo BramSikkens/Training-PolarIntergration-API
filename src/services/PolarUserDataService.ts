@@ -17,6 +17,7 @@ export default class PolarUserDataService extends BaseService<PolarUserData> {
         "https://www.polaraccesslink.com/v3/users",
         {
           "member-id": userid,
+          "Access-Control-Allow-Origin": "*",
         },
         {
           headers: {

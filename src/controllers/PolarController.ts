@@ -76,7 +76,7 @@ class PolarController implements IRoutableController {
 
     await this.UserService.insert(user);
 
-    res.status(200).send(user);
+    res.redirect(process.env.FRONTEND_URL);
   }
 
   async disconnectPolarAccount(req: Request, res: Response) {
