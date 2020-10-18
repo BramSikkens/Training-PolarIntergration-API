@@ -34,17 +34,6 @@ class AthleteController implements IRoutableController {
     this.MacroCycleService = macroCycleService;
 
     this.initializeRoutes();
-    // //this.getAthleteById = this.getAthleteById.bind(this);
-    // this.delete = this.delete.bind(this);
-    // this.insert = this.insert.bind(this);
-    // this.updateAthlete = this.updateAthlete.bind(this);
-    // this.addTrainingZoneToAthlete = this.addTrainingZoneToAthlete.bind(this);
-    // this.removeTrainingZoneFromUser = this.removeTrainingZoneFromUser.bind(
-    //   this
-    // );
-    // this.addDailyMetricToAthlete = this.addDailyMetricToAthlete.bind(this);
-    // this.removeTrainingZoneFromUser = this.removeDailyMetricFromUser.bind(this);
-    // this.getUserTrainingzones = this.getUserTrainingzones.bind(this);
   }
 
   public initializeRoutes(): void {

@@ -1,16 +1,18 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   TableInheritance,
-  ColumnType,
 } from "typeorm";
 import Event from "./Event";
+import PolarAuthorisation from "./PolarAuthorisation";
+import PolarUserData from "./PolarUserData";
 import Training from "./Training";
-import PlannedTraining from "./PlannedTraining";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -48,4 +50,15 @@ export default class User {
 
   @OneToMany((type) => Training, (training) => training.owner)
   trainings: Training[];
+
+  @OneToOne((type) => PolarAuthorisation, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
+  @JoinColumn()
+  polarAuthorisation: PolarAuthorisation;
+
+  @JoinColumn()
+  @OneToOne((type) => PolarUserData, { cascade: true, onDelete: "CASCADE" })
+  polarUserData: PolarUserData;
 }

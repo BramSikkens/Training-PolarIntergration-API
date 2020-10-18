@@ -13,6 +13,7 @@ export default class UserService extends BaseService<User> {
     try {
       const user: User = await repository.findOne({
         where: { username: name },
+        relations: ["polarAuthorisation"],
       });
       return user;
     } catch (error) {
