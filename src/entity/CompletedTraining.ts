@@ -12,6 +12,12 @@ export default class CompletedTraining extends Training {
   RPI: number;
 
   @Column()
+  source: string;
+
+  @Column()
+  polarData: string;
+
+  @Column()
   postComment: string;
 
   @ManyToOne((type) => Athlete, (athlete) => athlete.completedTrainings)

@@ -25,6 +25,12 @@ export default class Training {
   @Column()
   duration: number;
 
+  @Column()
+  period: string;
+
+  @Column()
+  order: number;
+
   @ManyToOne((type) => User, (user) => user.trainings)
   owner: User;
 }

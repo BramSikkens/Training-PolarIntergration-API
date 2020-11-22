@@ -1,5 +1,6 @@
 // import express from "express";
 import dotenv from "dotenv";
+import ngrok from "ngrok";
 import { createConnection } from "typeorm";
 import App from "./app";
 import AthleteController from "./controllers/AthleteController";
@@ -46,4 +47,8 @@ import PolarController from "./controllers/PolarController";
     parseInt(process.env.PORT)
   );
   app.listen();
+  const ngrokResult = await ngrok.connect({
+    proto: "http",
+    addr: process.env.PORT,
+  });
 })();
