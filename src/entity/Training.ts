@@ -8,8 +8,7 @@ import {
 import User from "./User";
 
 @Entity()
-@TableInheritance({ column: { type: "varchar", name: "type" } })
-export default class Training {
+export default abstract class Training {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

@@ -1,4 +1,3 @@
-import axios from "axios";
 import express, { Request, Response } from "express";
 import CompletedTraining from "../entity/CompletedTraining";
 import PolarAuthorisation from "../entity/PolarAuthorisation";
@@ -7,6 +6,7 @@ import User from "../entity/User";
 import IRoutableController from "../interfaces/IRoutableController";
 import CompletedTrainingService from "../services/CompletedTrainingService";
 import PolarAuthorisationService from "../services/PolarAuthorisationService";
+import PolarTrainingService from "../services/PolarTrainingService";
 import PolarUserDataService from "../services/PolarUserDataService";
 import UserService from "../services/UserService";
 
@@ -139,155 +139,95 @@ class PolarController implements IRoutableController {
   }
 
   async IncomingWebHook(req: Request, res: Response) {
-    console.log("GOT INFO", req.body);
-    const polaruser = await this.PolarAuthorisationService.find({
-      where: {
-        xUserId: req.body.user_id,
-      },
-    });
-
-    const newTrainings = await this.checkForNewAvailableTrainings(
-      req.body.user_id
-    );
-    const completedTrainings =
-      newTrainings &&
-      newTrainings.map((training) =>
-        this.tranferPolarTrainingToCompletedTraining(training)
-      );
-
-    console.log(completedTrainings);
-
-    // tslint:disable-next-line: no-unused-expression
-    completedTrainings &&
-      completedTrainings.forEach(async (completedTraining) => {
-        await this.CompletedTrainingService.insert(completedTraining);
-      });
-
+    // console.log("GOT INFO", req.body);
+    // const polaruser = await this.PolarAuthorisationService.find({
+    //   where: {
+    //     xUserId: req.body.user_id,
+    //   },
+    // });
+    // const newTrainings = await this.checkForNewAvailableTrainings(
+    //   req.body.user_id
+    // );
+    // const completedTrainings =
+    //   newTrainings &&
+    //   newTrainings.map((training) =>
+    //     this.tranferPolarTrainingToCompletedTraining(training, polaruser)
+    //   );
+    // console.log(completedTrainings);
+    // // tslint:disable-next-line: no-unused-expression
+    // completedTrainings &&
+    //   completedTrainings.forEach(async (completedTraining) => {
+    //     await this.CompletedTrainingService.insert(completedTraining);
+    //   });
     return res.status(200).send("OK");
   }
 
   async CheckForNewData(req: Request, res: Response) {
     const { polarUserId } = req.params;
-    const newTrainings = await this.checkForNewAvailableTrainings(polarUserId);
-    if (newTrainings.length === 0) {
-      return res.status(200).send("no new trainings");
-    }
-    const completedTrainings = newTrainings.map((training) =>
-      this.tranferPolarTrainingToCompletedTraining(training)
-    );
-
-    await Promise.all(
-      completedTrainings.map(async (completedTraining) => {
-        await this.CompletedTrainingService.insert(completedTraining);
-      })
-    );
-
-    return res.status(200).send(completedTrainings);
-  }
-
-  async checkForNewAvailableTrainings(polarUserId: string) {
-    const newTrainings: any[] = [];
     const polaruser = await this.PolarAuthorisationService.find({
       where: {
         xUserId: polarUserId,
       },
     });
 
-    // Check For new Data
-    const pullDataRequest = await axios.get(
-      "https://www.polaraccesslink.com/v3/notifications",
-      {
-        headers: {
-          Authorization:
-            "Basic Y2M4NDEwN2YtMDNjZi00YjgxLWEzYTMtNzhlOTc1Mjk5ZTU5OmY2M2NmYWU4LTRhOWYtNDJhYi05ZGMxLTY2ZWFhZmJiZDZjNQ==",
-        },
-      }
-    );
-
-    // CHECK FOR EXERCISES
-    const availableTrainings = await pullDataRequest.data[
-      "available-user-data"
-    ].filter((data: any) => data["data-type"] === "EXERCISE")[0];
-
-    // IF EXERCISES
+    // const newTrainings = await this.checkForNewAvailableTrainings(polarUserId);
+    const availableTrainings = await PolarTrainingService.checkAvailableTrainings();
     if (availableTrainings) {
-      // Create Transaction
-      try {
-        const transactionRequest = await axios.post(
-          availableTrainings.url,
-          null,
-          {
-            headers: {
-              Accept: "application/json",
-              Authorization: "Bearer " + polaruser.accessToken,
-            },
-          }
-        );
 
-        const transactionData = await transactionRequest.data;
 
-        // LIST EXERCISES
-        const activitiesRequest = await axios.get(
-          transactionData["resource-uri"],
-          {
-            headers: {
-              Accept: "application/json",
-              Authorization: "Bearer " + polaruser.accessToken,
-            },
-          }
-        );
-        const exerciseUrls = await activitiesRequest.data.exercises;
+      // start transaction
+      const transactionResourceUri = await PolarTrainingService.setupTransaction(
+        availableTrainings,
+        polaruser.accessToken
+      );
+      // list trainings
+      const exerciseUrls = await PolarTrainingService.getAvailableTrainingUrls(
+        transactionResourceUri,
+        polaruser.accessToken
+      );
 
-        // LOOP OVER EXERCISES
-        await Promise.all(
-          exerciseUrls &&
-            exerciseUrls.map(async (url: any) => {
-              const newExerciseRequest = await axios.get(url, {
-                headers: {
-                  Accept: "application/json",
-                  Authorization: "Bearer " + polaruser.accessToken,
-                },
-              });
+      // fetchTrainingFromUrls
+      const polarTrainings = await PolarTrainingService.fetchTrainingFromUrls(
+        exerciseUrls,
+        polaruser.accessToken
+      );
 
-              const exerciseData = await newExerciseRequest.data;
-              console.log(exerciseData);
-              newTrainings.push(exerciseData);
-            })
-        );
+      const completedTrainings = polarTrainings.map((training) =>
+        this.tranferPolarTrainingToCompletedTraining(training, polaruser)
+      );
 
-        // COMMIT TRANSACTION
-        const transactionCommitRequest = await axios.put(
-          transactionData["resource-uri"],
-          null,
-          {
-            headers: {
-              Authorization: "Bearer " + polaruser.accessToken,
-            },
-          }
-        );
+      await Promise.all(
+        completedTrainings.map(async (completedTraining) => {
+          await this.CompletedTrainingService.insert(completedTraining);
+        })
+      );
 
-        const transactionCommit = await transactionCommitRequest.data;
-        console.log(transactionCommit);
+      // commitTransaction
+      await PolarTrainingService.completeTransaction(
+        transactionResourceUri,
+        polaruser.accessToken
+      );
 
-        return newTrainings;
-      } catch (e) {
-        console.log(e);
-      }
+      return res.status(200).send(completedTrainings);
     } else {
-      console.log("no new trainings");
-      return [];
+      return res.status(200).send([]);
     }
-
-    return [];
   }
 
-  tranferPolarTrainingToCompletedTraining(polarTraining: any) {
+  tranferPolarTrainingToCompletedTraining(polarTraining: any, polaruser: any) {
     const completedTraining: CompletedTraining = new CompletedTraining();
     completedTraining.dateCompleted = polarTraining["start-time"];
     completedTraining.source = "POLAR";
     completedTraining.title = "POLAR " + polarTraining.sport;
     completedTraining.polarData = JSON.stringify(polarTraining);
-    completedTraining.athlete = polarTraining.user;
+    completedTraining.athlete = polaruser.user;
+
+    if (new Date(polarTraining["start-time"]).getHours() <= 12) {
+      completedTraining.period = "VM";
+    } else {
+      completedTraining.period = "NM";
+    }
+
     return completedTraining;
   }
 }
