@@ -9,6 +9,8 @@ export default class PlannedTraining extends Training {
   @JoinTable()
   athletes: Athlete[];
 
-  @Column()
+  @Column({
+    type: "datetime",
+  })
   beginDate: Date;
 }
