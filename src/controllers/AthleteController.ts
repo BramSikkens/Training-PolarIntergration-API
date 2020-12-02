@@ -8,7 +8,7 @@ import DailyMetric from "../entity/DailyMetric";
 import DailyMetricService from "../services/DailyMetricService";
 import PlannedTrainingService from "../services/PlannedTrainingService";
 import PlannedTraining from "../entity/PlannedTraining";
-import { MacroCycle } from "../entity/MacroCycle";
+
 import MacroCycleService from "../services/MacroCycleService";
 
 class AthleteController implements IRoutableController {
@@ -25,13 +25,12 @@ class AthleteController implements IRoutableController {
     trainingZoneService: TrainingZoneService,
     dailymetricService: DailyMetricService,
     plannedTrainingService: PlannedTrainingService,
-    macroCycleService: MacroCycleService
+
   ) {
     this.trainingZoneService = trainingZoneService;
     this.athleteService = athleteService;
     this.DailyMetricService = dailymetricService;
     this.PlannedTrainingService = plannedTrainingService;
-    this.MacroCycleService = macroCycleService;
 
     this.initializeRoutes();
   }
@@ -48,10 +47,7 @@ class AthleteController implements IRoutableController {
       this.addDailyMetricToAthlete.bind(this)
     );
 
-    this.router.post(
-      this.path + "/:userId/macrocycles",
-      this.addMacroToAthlete.bind(this)
-    );
+
 
     this.router.get(this.path + "/:userid", this.getAthleteById.bind(this));
     this.router.get(
@@ -181,26 +177,12 @@ class AthleteController implements IRoutableController {
     return res.status(200).send(athlete.trainingZones);
   }
 
-  async addMacroToAthlete(req: Request, res: Response) {
-    const { userId } = req.params;
-    const macro: MacroCycle = req.body;
-    const athlete: Athlete = await this.athleteService.getById(userId, {
-      relations: ["macroCycles"],
-    });
-    if (athlete.macroCycles == null) {
-      athlete.macroCycles = [];
-    }
-    athlete.macroCycles.push(macro);
 
-    await this.athleteService.insert(athlete);
-    return res.status(200).send(athlete.macroCycles);
-  }
 }
 
 export default new AthleteController(
   new AthleteService(Athlete),
   new TrainingZoneService(TrainingZone),
   new DailyMetricService(DailyMetric),
-  new PlannedTrainingService(PlannedTraining),
-  new MacroCycleService(MacroCycle)
+  new PlannedTrainingService(PlannedTraining)
 );

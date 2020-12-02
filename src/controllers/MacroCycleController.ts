@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { MesoCycle } from "../entity/MesoCycle";
-import { MacroCycle } from "../entity/MacroCycle";
+import MacroCycle from "../entity/MacroCycle";
 import IRoutableController from "../interfaces/IRoutableController";
 import MacroCycleService from "../services/MacroCycleService";
 
@@ -16,8 +16,8 @@ class MacroCycleController implements IRoutableController {
 
   initializeRoutes(): void {
     this.router.get(
-      this.path + "/athletes",
-      this.getMacroCyclesFromAthlete.bind(this)
+      this.path + "/teams/:teamId",
+      this.getMacroCyclesFromTeam.bind(this)
     );
     this.router.post(this.path, this.createMacroCycle.bind(this));
     this.router.delete(
@@ -81,12 +81,14 @@ class MacroCycleController implements IRoutableController {
     return res.status(201).send(response);
   }
 
-  async getMacroCyclesFromAthlete(req: Request, res: Response) {
-    console.log(req.query.userIds);
+  async getMacroCyclesFromTeam(req: Request, res: Response) {
+    console.log(req.query.teamId);
 
-    const cycles = await this.macrocycleService.getMacroOfathletes(
-      req.query.userIds
-    );
+    const cycles = await this.macrocycleService.findMany({
+      where: {
+        team: { id: req.params.teamId },
+      },
+    });
 
     return res.status(201).send(cycles);
   }
