@@ -119,6 +119,7 @@ class MacroCycleController implements IRoutableController {
   }
 
   async getAllMicrosFromMacro(req: Request, res: Response) {
+    console.log("ok");
     const { macrocycleId } = req.params;
     const response = await this.macrocycleService.getById(macrocycleId, {
       relations: ["mesoCycles"],
@@ -128,6 +129,7 @@ class MacroCycleController implements IRoutableController {
     const micros: any = [];
     response.mesoCycles.forEach((meso: any) => {
       meso.microcycles.forEach((micro: any) => {
+        micro.trainingZones = JSON.parse(micro.trainingZones);
         micros.push(micro);
       });
     });

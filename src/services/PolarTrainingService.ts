@@ -67,27 +67,24 @@ class PolarTrainingService {
 
   async fetchTrainingFromUrls(urls: string[], userAccessToken: string) {
     const newTrainings: any[] = [];
-    await Promise.all(
-      urls &&
-        urls.map(async (url: any) => {
-          // get TrainingData
-          const exerciseData = await this.fetchPolarTraining(
-            url,
-            userAccessToken
-          );
-          // add HeartRateData
-          exerciseData.heartRateZones = await JSON.stringify(
-            this.fetchHeartRateDataFromPolarTraining(url, userAccessToken)
-          );
-          // addGPSData
-          exerciseData.gps = this.fetchGPSDataFromPolarTraining(
-            url,
-            userAccessToken
-          );
-
-          newTrainings.push(exerciseData);
-        })
-    );
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < urls.length; i++) {
+      // get TrainingData
+      const exerciseData = await this.fetchPolarTraining(
+        urls[i],
+        userAccessToken
+      );
+      // add HeartRateData
+      exerciseData.heartRateZones = await JSON.stringify(
+        this.fetchHeartRateDataFromPolarTraining(urls[i], userAccessToken)
+      );
+      // addGPSData
+      exerciseData.gps = await this.fetchGPSDataFromPolarTraining(
+        urls[i],
+        userAccessToken
+      );
+      newTrainings.push(exerciseData);
+    }
 
     return newTrainings;
   }

@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, OneToMany } from "typeorm";
 import { Cycle } from "./Cycle";
-import MacroCycle  from "./MacroCycle";
+import MacroCycle from "./MacroCycle";
 import { MicroCycle } from "./MicroCycle";
 
 @Entity()
@@ -11,7 +11,7 @@ export class MesoCycle extends Cycle {
   macroCycle: MacroCycle;
 
   @OneToMany((type) => MicroCycle, (microCycle) => microCycle.mesoCycle, {
-    // eager: true,
+    eager: true,
     cascade: true,
     onDelete: "CASCADE",
   })

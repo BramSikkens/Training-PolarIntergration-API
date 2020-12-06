@@ -53,6 +53,8 @@ class MicroCycleController implements IRoutableController {
       req.body
     );
     if (response.error) return res.status(response.statusCode).send(response);
+
+    response.trainingZones = JSON.parse(response.trainingZones);
     return res.status(201).send(response);
   }
 

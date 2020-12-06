@@ -8,7 +8,7 @@ import Team from "./Team";
 export default class MacroCycle extends Cycle {
   @OneToMany((type) => MesoCycle, (mesoCycle) => mesoCycle.macroCycle, {
     cascade: true,
-    // eager: true,
+    eager: true,
     onDelete: "CASCADE",
   })
   mesoCycles: MesoCycle[];
