@@ -1,5 +1,7 @@
 import axios from "axios";
 import xmlJs from "xml-js";
+import * as fs from "fs";
+import { Parser } from "tcx-js";
 
 class PolarTrainingService {
   // constructor() {}
@@ -70,19 +72,31 @@ class PolarTrainingService {
     // tslint:disable-next-line: prefer-for-of
     for (let i = 0; i < urls.length; i++) {
       // get TrainingData
-      const exerciseData = await this.fetchPolarTraining(
+      let exerciseData = await this.fetchPolarTraining(
         urls[i],
         userAccessToken
       );
+
+      const heartRateData = JSON.stringify(
+        await this.fetchHeartRateDataFromPolarTraining(urls[i], userAccessToken)
+      );
+
+      const TCXData = await this.fetchTCXFromPolarTraining(
+        urls[i],
+        userAccessToken
+      );
+
       // add HeartRateData
-      exerciseData.heartRateZones = await JSON.stringify(
-        this.fetchHeartRateDataFromPolarTraining(urls[i], userAccessToken)
-      );
+      exerciseData = {
+        ...exerciseData,
+        hrData: heartRateData,
+        tcx: TCXData,
+      };
       // addGPSData
-      exerciseData.gps = await this.fetchGPSDataFromPolarTraining(
-        urls[i],
-        userAccessToken
-      );
+      // exerciseData.gps = await this.fetchGPSDataFromPolarTraining(
+      //   urls[i],
+      //   userAccessToken
+      // );
       newTrainings.push(exerciseData);
     }
 
@@ -98,6 +112,31 @@ class PolarTrainingService {
     });
     const exerciseData = await newExerciseRequest.data;
     return exerciseData;
+  }
+
+  async fetchTCXFromPolarTraining(url: string, userAccessToken: string) {
+    const TCXRequest = await axios.get(url + "/tcx", {
+      headers: {
+        Accept: "application/vnd.garmin.tcx+xml",
+        Authorization: "Bearer " + userAccessToken,
+      },
+    });
+
+    const txcData = await TCXRequest.data;
+
+    const tcxJSon = JSON.parse(
+      xmlJs.xml2json(txcData, {
+        compact: true,
+        ignoreDoctype: true,
+        ignoreComment: true,
+      })
+    );
+
+    const newParser = new Parser(txcData);
+    const TrackPoints =  JSON.stringify(newParser.activity.trackpoints);
+
+
+    return TrackPoints;
   }
 
   async fetchGPSDataFromPolarTraining(url: string, userAccessToken: string) {

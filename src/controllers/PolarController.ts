@@ -173,8 +173,6 @@ class PolarController implements IRoutableController {
     // const newTrainings = await this.checkForNewAvailableTrainings(polarUserId);
     const availableTrainings = await PolarTrainingService.checkAvailableTrainings();
     if (availableTrainings) {
-
-
       // start transaction
       const transactionResourceUri = await PolarTrainingService.setupTransaction(
         availableTrainings,
@@ -203,10 +201,10 @@ class PolarController implements IRoutableController {
       );
 
       // commitTransaction
-      await PolarTrainingService.completeTransaction(
-        transactionResourceUri,
-        polaruser.accessToken
-      );
+      // await PolarTrainingService.completeTransaction(
+      //   transactionResourceUri,
+      //   polaruser.accessToken
+      // );
 
       return res.status(200).send(completedTrainings);
     } else {

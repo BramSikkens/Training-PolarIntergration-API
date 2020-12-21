@@ -49,6 +49,7 @@
     "chai": "^4.2.0",
     "mocha": "^8.0.1",
     "nodemon": "^2.0.4",
+    "tcx-js": "git://github.com/BramSikkens/tcx-js.git",
     "tslint": "^6.1.2",
     "typescript": "^3.9.6"
   }

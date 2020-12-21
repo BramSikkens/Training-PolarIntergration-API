@@ -14,7 +14,7 @@ export default class CompletedTraining extends Training {
   @Column()
   source: string;
 
-  @Column({ length: 500 })
+  @Column("longtext")
   polarData: string;
 
   @Column()
