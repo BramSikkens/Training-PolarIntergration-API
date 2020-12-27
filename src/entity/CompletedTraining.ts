@@ -20,6 +20,9 @@ export default class CompletedTraining extends Training {
   @Column()
   postComment: string;
 
+  @Column("text")
+  timeInZones: string;
+
   @ManyToOne((type) => Athlete, (athlete) => athlete.completedTrainings)
   athlete: Athlete;
 

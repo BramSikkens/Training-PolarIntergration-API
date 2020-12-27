@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import TrainingZoneService from "../services/TrainingZoneService";
 import CompletedTraining from "../entity/CompletedTraining";
 import PolarAuthorisation from "../entity/PolarAuthorisation";
 import PolarUserData from "../entity/PolarUserData";
@@ -9,6 +10,10 @@ import PolarAuthorisationService from "../services/PolarAuthorisationService";
 import PolarTrainingService from "../services/PolarTrainingService";
 import PolarUserDataService from "../services/PolarUserDataService";
 import UserService from "../services/UserService";
+import TrainingZone from "../entity/TrainingZone";
+import {
+  tranferPolarTrainingToCompletedTraining,
+} from "../helpers/PolarUtils";
 
 // WEBHOOK;
 // {
@@ -29,17 +34,20 @@ class PolarController implements IRoutableController {
   private PolarAuthorisationService: PolarAuthorisationService;
   private UserService: UserService;
   private CompletedTrainingService: CompletedTrainingService;
+  private TrainingZoneService: TrainingZoneService;
 
   constructor(
     polarUserDataService: PolarUserDataService,
     polarAuthorisationService: PolarAuthorisationService,
     userService: UserService,
-    completedTrainingService: CompletedTrainingService
+    completedTrainingService: CompletedTrainingService,
+    trainingZoneService: TrainingZoneService
   ) {
     this.PolarAuthorisationService = polarAuthorisationService;
     this.PolarUserDataService = polarUserDataService;
     this.UserService = userService;
     this.CompletedTrainingService = completedTrainingService;
+    this.TrainingZoneService = trainingZoneService;
     this.initializeRoutes();
   }
 
@@ -170,6 +178,14 @@ class PolarController implements IRoutableController {
       },
     });
 
+    const polarUserTrainingZones = await this.TrainingZoneService.findMany({
+      where: {
+        athletes: {
+          id: polaruser.user.id,
+        },
+      },
+    });
+
     // const newTrainings = await this.checkForNewAvailableTrainings(polarUserId);
     const availableTrainings = await PolarTrainingService.checkAvailableTrainings();
     if (availableTrainings) {
@@ -191,7 +207,11 @@ class PolarController implements IRoutableController {
       );
 
       const completedTrainings = polarTrainings.map((training) =>
-        this.tranferPolarTrainingToCompletedTraining(training, polaruser)
+        tranferPolarTrainingToCompletedTraining(
+          training,
+          polaruser,
+          polarUserTrainingZones
+        )
       );
 
       await Promise.all(
@@ -211,28 +231,12 @@ class PolarController implements IRoutableController {
       return res.status(200).send([]);
     }
   }
-
-  tranferPolarTrainingToCompletedTraining(polarTraining: any, polaruser: any) {
-    const completedTraining: CompletedTraining = new CompletedTraining();
-    completedTraining.dateCompleted = polarTraining["start-time"];
-    completedTraining.source = "POLAR";
-    completedTraining.title = "POLAR " + polarTraining.sport;
-    completedTraining.polarData = JSON.stringify(polarTraining);
-    completedTraining.athlete = polaruser.user;
-
-    if (new Date(polarTraining["start-time"]).getHours() <= 12) {
-      completedTraining.period = "VM";
-    } else {
-      completedTraining.period = "NM";
-    }
-
-    return completedTraining;
-  }
 }
 
 export default new PolarController(
   new PolarUserDataService(PolarUserData),
   new PolarAuthorisationService(PolarAuthorisation),
   new UserService(User),
-  new CompletedTrainingService(CompletedTraining)
+  new CompletedTrainingService(CompletedTraining),
+  new TrainingZoneService(TrainingZone)
 );

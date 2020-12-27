@@ -2,6 +2,7 @@ import axios from "axios";
 import xmlJs from "xml-js";
 import * as fs from "fs";
 import { Parser } from "tcx-js";
+import { getTimeInTrainingZone } from "../helpers/PolarUtils";
 
 class PolarTrainingService {
   // constructor() {}
@@ -77,8 +78,9 @@ class PolarTrainingService {
         userAccessToken
       );
 
-      const heartRateData = JSON.stringify(
-        await this.fetchHeartRateDataFromPolarTraining(urls[i], userAccessToken)
+      const heartRateData = await this.fetchHeartRateDataFromPolarTraining(
+        urls[i],
+        userAccessToken
       );
 
       const TCXData = await this.fetchTCXFromPolarTraining(
@@ -133,8 +135,7 @@ class PolarTrainingService {
     );
 
     const newParser = new Parser(txcData);
-    const TrackPoints =  JSON.stringify(newParser.activity.trackpoints);
-
+    const TrackPoints = newParser.activity.trackpoints;
 
     return TrackPoints;
   }

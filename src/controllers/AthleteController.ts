@@ -170,7 +170,6 @@ class AthleteController implements IRoutableController {
 
   async getUserTrainingzones(req: Request, res: Response) {
     const { userId } = req.params;
-    console.log(userId);
     const athlete: Athlete = await this.athleteService.getById(userId, {
       relations: ["trainingZones"],
     });
