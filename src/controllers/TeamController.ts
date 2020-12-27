@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import Team from "../entity/Team";
 import User from "../entity/User";
+import MacroCycle from "../entity/MacroCycle";
 import IRoutableController from "../interfaces/IRoutableController";
 import TeamService from "../services/TeamService";
 import UserService from "../services/UserService";
@@ -43,6 +44,11 @@ class TeamController implements IRoutableController {
     this.router.delete(this.path + "/:teamId", this.deleteTeam.bind(this));
     this.router.get(this.path + "/:teamId", this.getTeamById.bind(this));
     this.router.put(this.path + "/:teamId", this.updateTeam.bind(this));
+
+    this.router.post(
+      this.path + "/:teamId/macrocycles",
+      this.addMacroToTeam.bind(this)
+    );
   }
 
   async createTeam(req: Request, res: Response): Promise<any> {
@@ -104,6 +110,21 @@ class TeamController implements IRoutableController {
     });
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response.users);
+  }
+
+  async addMacroToTeam(req: Request, res: Response) {
+    const { teamId } = req.params;
+    const macro: MacroCycle = req.body;
+    const team: Team = await this.teamService.getById(teamId, {
+      relations: ["macroCycles"],
+    });
+    if (team.macroCycles == null) {
+      team.macroCycles = [];
+    }
+    team.macroCycles.push(macro);
+
+    const newTeam = await this.teamService.insert(team);
+    return res.status(200).send(newTeam.macroCycles);
   }
 }
 

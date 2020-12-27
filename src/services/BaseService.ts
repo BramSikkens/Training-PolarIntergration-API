@@ -54,6 +54,44 @@ export default abstract class BaseService<T> implements IBaseService {
     }
   }
 
+  async find(options?: FindOneOptions): Promise<any> {
+    const repository: Repository<T> = getRepository(this.model);
+    try {
+      const singleItem: T = await repository.findOne(options);
+      if (singleItem) {
+        return singleItem;
+      } else {
+        throw new Error("Item not found");
+      }
+    } catch (error) {
+      const errorMessage: ErrorDTO = {
+        statusCode: 500,
+        message: error.message || "Not able to get item",
+        errors: error.errors,
+      };
+      return errorMessage;
+    }
+  }
+
+  async findMany(options?: FindManyOptions): Promise<any> {
+    const repository: Repository<T> = getRepository(this.model);
+    try {
+      const items: T[] = await repository.find(options);
+      if (items) {
+        return items;
+      } else {
+        throw new Error("Item not found");
+      }
+    } catch (error) {
+      const errorMessage: ErrorDTO = {
+        statusCode: 500,
+        message: error.message || "Not able to get item",
+        errors: error.errors,
+      };
+      return errorMessage;
+    }
+  }
+
   async getAll(options: FindManyOptions) {
     const repository: Repository<T> = getRepository(this.model);
     try {
@@ -85,7 +123,6 @@ export default abstract class BaseService<T> implements IBaseService {
         return updatedResult;
       }
     } catch (error) {
-
       return {
         error: true,
         statusCode: 400,

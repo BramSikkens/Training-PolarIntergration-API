@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, OneToMany } from "typeorm";
 import { Cycle } from "./Cycle";
-import { MacroCycle } from "./MacroCycle";
+import MacroCycle from "./MacroCycle";
 import { MicroCycle } from "./MicroCycle";
 
 @Entity()

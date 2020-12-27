@@ -8,8 +8,7 @@ import {
 import User from "./User";
 
 @Entity()
-@TableInheritance({ column: { type: "varchar", name: "type" } })
-export default class Training {
+export default abstract class Training {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -24,6 +23,12 @@ export default class Training {
 
   @Column()
   duration: number;
+
+  @Column()
+  period: string;
+
+  @Column()
+  order: number;
 
   @ManyToOne((type) => User, (user) => user.trainings)
   owner: User;

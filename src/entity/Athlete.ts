@@ -4,7 +4,6 @@ import DailyMetric from "./DailyMetric";
 import TrainingZone from "./TrainingZone";
 import CompletedTraining from "./CompletedTraining";
 import PlannedTraining from "./PlannedTraining";
-import { MacroCycle } from "./MacroCycle";
 
 @ChildEntity()
 export default class Athlete extends User {
@@ -30,9 +29,4 @@ export default class Athlete extends User {
     }
   )
   plannedTrainings: PlannedTraining[];
-
-  @ManyToMany((type) => MacroCycle, (cycle) => cycle.athletes, {
-    cascade: ["insert", "update"],
-  })
-  macroCycles: MacroCycle[];
 }

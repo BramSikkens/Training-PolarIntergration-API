@@ -1,5 +1,5 @@
-import { ChildEntity } from "typeorm";
+import { ChildEntity, Entity } from "typeorm";
 import Training from "./Training";
 
-@ChildEntity()
+@Entity()
 export default class TrainingTemplate extends Training {}

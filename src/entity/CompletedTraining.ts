@@ -1,9 +1,9 @@
-import { ChildEntity, Column, ManyToOne } from "typeorm";
+import { ChildEntity, Column, Entity, ManyToOne } from "typeorm";
 import Training from "./Training";
 import Athlete from "./Athlete";
 import PlannedTraining from "./PlannedTraining";
 
-@ChildEntity()
+@Entity()
 export default class CompletedTraining extends Training {
   @Column()
   dateCompleted: Date;
@@ -12,7 +12,16 @@ export default class CompletedTraining extends Training {
   RPI: number;
 
   @Column()
+  source: string;
+
+  @Column("longtext")
+  polarData: string;
+
+  @Column()
   postComment: string;
+
+  @Column("text")
+  timeInZones: string;
 
   @ManyToOne((type) => Athlete, (athlete) => athlete.completedTrainings)
   athlete: Athlete;

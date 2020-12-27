@@ -1,3 +1,4 @@
+import { type } from "os";
 import {
   Entity,
   Column,
@@ -5,7 +6,9 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from "typeorm";
+import MacroCycle from "./MacroCycle";
 import Trainer from "./Trainer";
 import User from "./User";
 
@@ -23,4 +26,10 @@ export default class Team {
   @ManyToMany((type) => User, { cascade: true })
   @JoinTable()
   users: User[];
+
+  @OneToMany((type) => MacroCycle, (macroCycle) => macroCycle.team, {
+    eager: true,
+    cascade: true,
+  })
+  macroCycles: MacroCycle[];
 }

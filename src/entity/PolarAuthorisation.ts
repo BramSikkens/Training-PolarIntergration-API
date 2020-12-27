@@ -25,9 +25,9 @@ export default class PolarAuthorisation {
   @Column()
   xUserId: number;
 
-  @OneToOne((type) => User, (user) => user.polarUserData, {
+  @OneToOne((type) => User, (user) => user.polarAuthorisation, {
     onDelete: "CASCADE",
+    eager: true,
   })
-
   user: User;
 }

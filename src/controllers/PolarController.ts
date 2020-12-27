@@ -1,14 +1,31 @@
-import axios from "axios";
 import express, { Request, Response } from "express";
-import qs from "qs";
-import User from "../entity/User";
-import UserService from "../services/UserService";
+import TrainingZoneService from "../services/TrainingZoneService";
+import CompletedTraining from "../entity/CompletedTraining";
 import PolarAuthorisation from "../entity/PolarAuthorisation";
 import PolarUserData from "../entity/PolarUserData";
+import User from "../entity/User";
 import IRoutableController from "../interfaces/IRoutableController";
+import CompletedTrainingService from "../services/CompletedTrainingService";
 import PolarAuthorisationService from "../services/PolarAuthorisationService";
+import PolarTrainingService from "../services/PolarTrainingService";
 import PolarUserDataService from "../services/PolarUserDataService";
-import { use } from "passport";
+import UserService from "../services/UserService";
+import TrainingZone from "../entity/TrainingZone";
+import {
+  tranferPolarTrainingToCompletedTraining,
+} from "../helpers/PolarUtils";
+
+// WEBHOOK;
+// {
+//     "data": {
+//         "id": "Zye7DWP1",
+//         "events": [
+//             "EXERCISE"
+//         ],
+//         "url": "http://4489d5800bb6.ngrok.io/polar/webhook",
+//         "signature_secret_key": "131e4c26-7293-48b5-be24-b47606d87c68"
+//     }
+// }
 
 class PolarController implements IRoutableController {
   public path: string = "/polar";
@@ -16,20 +33,30 @@ class PolarController implements IRoutableController {
   private PolarUserDataService: PolarUserDataService;
   private PolarAuthorisationService: PolarAuthorisationService;
   private UserService: UserService;
+  private CompletedTrainingService: CompletedTrainingService;
+  private TrainingZoneService: TrainingZoneService;
 
   constructor(
     polarUserDataService: PolarUserDataService,
     polarAuthorisationService: PolarAuthorisationService,
-    userService: UserService
+    userService: UserService,
+    completedTrainingService: CompletedTrainingService,
+    trainingZoneService: TrainingZoneService
   ) {
     this.PolarAuthorisationService = polarAuthorisationService;
     this.PolarUserDataService = polarUserDataService;
     this.UserService = userService;
+    this.CompletedTrainingService = completedTrainingService;
+    this.TrainingZoneService = trainingZoneService;
     this.initializeRoutes();
   }
 
   public initializeRoutes(): void {
     this.router.get(this.path + "/auth", this.polarLogin.bind(this));
+    this.router.get(
+      this.path + "/pull/:polarUserId",
+      this.CheckForNewData.bind(this)
+    );
     this.router.get(
       "/auth/authorisationcode",
       this.polarRegisterUser.bind(this)
@@ -39,6 +66,8 @@ class PolarController implements IRoutableController {
       this.path + "/users/:userId",
       this.disconnectPolarAccount.bind(this)
     );
+
+    this.router.post(this.path + "/webhook", this.IncomingWebHook.bind(this));
   }
 
   async polarLogin(req: Request, res: Response) {
@@ -116,10 +145,98 @@ class PolarController implements IRoutableController {
 
     return res.send(user);
   }
+
+  async IncomingWebHook(req: Request, res: Response) {
+    // console.log("GOT INFO", req.body);
+    // const polaruser = await this.PolarAuthorisationService.find({
+    //   where: {
+    //     xUserId: req.body.user_id,
+    //   },
+    // });
+    // const newTrainings = await this.checkForNewAvailableTrainings(
+    //   req.body.user_id
+    // );
+    // const completedTrainings =
+    //   newTrainings &&
+    //   newTrainings.map((training) =>
+    //     this.tranferPolarTrainingToCompletedTraining(training, polaruser)
+    //   );
+    // console.log(completedTrainings);
+    // // tslint:disable-next-line: no-unused-expression
+    // completedTrainings &&
+    //   completedTrainings.forEach(async (completedTraining) => {
+    //     await this.CompletedTrainingService.insert(completedTraining);
+    //   });
+    return res.status(200).send("OK");
+  }
+
+  async CheckForNewData(req: Request, res: Response) {
+    const { polarUserId } = req.params;
+    const polaruser = await this.PolarAuthorisationService.find({
+      where: {
+        xUserId: polarUserId,
+      },
+    });
+
+    const polarUserTrainingZones = await this.TrainingZoneService.findMany({
+      where: {
+        athletes: {
+          id: polaruser.user.id,
+        },
+      },
+    });
+
+    // const newTrainings = await this.checkForNewAvailableTrainings(polarUserId);
+    const availableTrainings = await PolarTrainingService.checkAvailableTrainings();
+    if (availableTrainings) {
+      // start transaction
+      const transactionResourceUri = await PolarTrainingService.setupTransaction(
+        availableTrainings,
+        polaruser.accessToken
+      );
+      // list trainings
+      const exerciseUrls = await PolarTrainingService.getAvailableTrainingUrls(
+        transactionResourceUri,
+        polaruser.accessToken
+      );
+
+      // fetchTrainingFromUrls
+      const polarTrainings = await PolarTrainingService.fetchTrainingFromUrls(
+        exerciseUrls,
+        polaruser.accessToken
+      );
+
+      const completedTrainings = polarTrainings.map((training) =>
+        tranferPolarTrainingToCompletedTraining(
+          training,
+          polaruser,
+          polarUserTrainingZones
+        )
+      );
+
+      await Promise.all(
+        completedTrainings.map(async (completedTraining) => {
+          await this.CompletedTrainingService.insert(completedTraining);
+        })
+      );
+
+      // commitTransaction
+      // await PolarTrainingService.completeTransaction(
+      //   transactionResourceUri,
+      //   polaruser.accessToken
+      // );
+
+      return res.status(200).send(completedTrainings);
+    } else {
+      return res.status(200).send([]);
+    }
+  }
 }
 
 export default new PolarController(
   new PolarUserDataService(PolarUserData),
   new PolarAuthorisationService(PolarAuthorisation),
-  new UserService(User)
+  new UserService(User),
+  new CompletedTrainingService(CompletedTraining),
+  new TrainingZoneService(TrainingZone)
 );

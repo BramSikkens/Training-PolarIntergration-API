@@ -95,7 +95,6 @@ class PlannedTrainingController implements IRoutableController {
   }
 
   async getPlannedTrainingFromAthletes(req: Request, res: Response) {
-    console.log(req.query.userIds);
     try {
       const plannedTrainings = await this.plannedTrainingService.getPlannedTrainingsOfUser(
         req.query.userIds

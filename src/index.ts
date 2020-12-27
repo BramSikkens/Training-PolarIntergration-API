@@ -1,5 +1,6 @@
 // import express from "express";
 import dotenv from "dotenv";
+import ngrok from "ngrok";
 import { createConnection } from "typeorm";
 import App from "./app";
 import AthleteController from "./controllers/AthleteController";
@@ -16,6 +17,9 @@ import TrainingZoneController from "./controllers/TrainingZoneController";
 import UserController from "./controllers/UserController";
 import TrainingTemplateController from "./controllers/TrainingTemplateController";
 import PolarController from "./controllers/PolarController";
+import TestController from "./controllers/TestController";
+
+import serverless from "serverless-http";
 
 (async () => {
   const env = dotenv.config();
@@ -41,9 +45,14 @@ import PolarController from "./controllers/PolarController";
       MicroCycleController,
       TrainingTemplateController,
       PolarController,
+      TestController,
     ],
     // tslint:disable-next-line: radix
     parseInt(process.env.PORT)
   );
   app.listen();
+  const ngrokResult = await ngrok.connect({
+    proto: "http",
+    addr: process.env.PORT,
+  });
 })();

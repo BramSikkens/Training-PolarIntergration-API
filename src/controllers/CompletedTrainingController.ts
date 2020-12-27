@@ -22,9 +22,16 @@ class CompletedTrainingController implements IRoutableController {
     this.deleteCompletedTraining = this.deleteCompletedTraining.bind(this);
     this.updateCompletedTraining = this.updateCompletedTraining.bind(this);
     this.getCompletedTrainingById = this.getCompletedTrainingById.bind(this);
+    this.getCompletedTrainingFromAthletes = this.getCompletedTrainingFromAthletes.bind(
+      this
+    );
   }
 
   initializeRoutes(): void {
+    this.router.get(
+      this.path + "/athletes/:athleteId",
+      this.getCompletedTrainingFromAthletes.bind(this)
+    );
     this.router.post(this.path, this.createCompletedTraining.bind(this));
     this.router.delete(
       this.path + "/:completedTrainingId",
@@ -86,6 +93,24 @@ class CompletedTrainingController implements IRoutableController {
     );
     if (response.error) return res.status(response.statusCode).send(response);
     return res.status(201).send(response);
+  }
+
+  async getCompletedTrainingFromAthletes(req: Request, res: Response) {
+
+    try {
+      const completedTrainings = await this.completedTrainingService.findMany({
+        where: {
+          athlete: {
+            id: req.params.athleteId,
+          },
+        },
+      });
+
+
+      return res.status(201).send(completedTrainings);
+    } catch (error) {
+      return error;
+    }
   }
 }
 
