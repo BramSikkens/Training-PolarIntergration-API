@@ -22,7 +22,7 @@ export default abstract class Training {
   trainingData: string;
 
   @Column()
-  duration: number;
+  duration: string;
 
   @Column()
   period: string;

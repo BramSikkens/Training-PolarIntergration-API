@@ -96,7 +96,6 @@ class CompletedTrainingController implements IRoutableController {
   }
 
   async getCompletedTrainingFromAthletes(req: Request, res: Response) {
-
     try {
       const completedTrainings = await this.completedTrainingService.findMany({
         where: {
@@ -105,7 +104,6 @@ class CompletedTrainingController implements IRoutableController {
           },
         },
       });
-
 
       return res.status(201).send(completedTrainings);
     } catch (error) {

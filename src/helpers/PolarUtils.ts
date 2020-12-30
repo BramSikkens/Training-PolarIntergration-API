@@ -1,4 +1,5 @@
 import CompletedTraining from "../entity/CompletedTraining";
+import MetaData from "../entity/MetaData";
 
 export function getTimeInTrainingZone(trainingZones: any, trackpoints: any[]) {
   trackpoints.forEach((trackpoint: any) => {
@@ -38,8 +39,14 @@ export function tranferPolarTrainingToCompletedTraining(
   completedTraining.dateCompleted = polarTraining["start-time"];
   completedTraining.source = "POLAR";
   completedTraining.title = "POLAR " + polarTraining.sport;
-  completedTraining.polarData = JSON.stringify(polarTraining);
+  completedTraining.polarData = new MetaData(JSON.stringify(polarTraining));
   completedTraining.athlete = polaruser.user;
+  completedTraining.duration = polarTraining.duration;
+  completedTraining.distance = polarTraining.distance;
+  completedTraining.calories = polarTraining.calories;
+  completedTraining.avgHr = polarTraining["heart-rate"].average;
+  completedTraining.maxHr = polarTraining["heart-rate"].maximum;
+
   completedTraining.timeInZones = JSON.stringify(
     getTimeInTrainingZone(userTrainingZones, polarTraining.tcx)
   );
