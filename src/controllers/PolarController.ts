@@ -15,17 +15,6 @@ import {
   tranferPolarTrainingToCompletedTraining,
 } from "../helpers/PolarUtils";
 
-// WEBHOOK;
-// {
-//     "data": {
-//         "id": "Zye7DWP1",
-//         "events": [
-//             "EXERCISE"
-//         ],
-//         "url": "http://4489d5800bb6.ngrok.io/polar/webhook",
-//         "signature_secret_key": "131e4c26-7293-48b5-be24-b47606d87c68"
-//     }
-// }
 
 class PolarController implements IRoutableController {
   public path: string = "/polar";
@@ -79,7 +68,7 @@ class PolarController implements IRoutableController {
     res.redirect(
       "https://flow.polar.com/oauth2/authorization?response_type=code&client_id=cc84107f-03cf-4b81-a3a3-78e975299e59&state=" +
         req.query.user
-      // SECRET f63cfae8-4a9f-42ab-9dc1-66eaafbbd6c5
+     
     );
   }
 
