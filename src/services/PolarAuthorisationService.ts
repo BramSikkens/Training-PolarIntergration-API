@@ -17,7 +17,7 @@ export default class PolarAuthorisationService extends BaseService<
     const AuthorizationString =
       "Basic " +
       Buffer.from(
-        "cc84107f-03cf-4b81-a3a3-78e975299e59:f63cfae8-4a9f-42ab-9dc1-66eaafbbd6c5"
+        "" // Here should be authorisation string
       ).toString("base64");
 
     try {
