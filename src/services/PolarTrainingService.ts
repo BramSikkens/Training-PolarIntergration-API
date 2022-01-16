@@ -14,7 +14,7 @@ class PolarTrainingService {
       {
         headers: {
           Authorization:
-            "Basic Y2M4NDEwN2YtMDNjZi00YjgxLWEzYTMtNzhlOTc1Mjk5ZTU5OmY2M2NmYWU4LTRhOWYtNDJhYi05ZGMxLTY2ZWFhZmJiZDZjNQ==",
+            "Basic ", //Here should be a token
         },
       }
     );
